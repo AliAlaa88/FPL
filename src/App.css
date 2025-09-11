@@ -3,6 +3,7 @@
   padding: 0;
   margin: 0;
 }
+
 body {
   width: 100%;
   background: linear-gradient(135deg, #1e1e2f 0%, #3a3a6c 100%);
@@ -12,14 +13,14 @@ body {
 }
 
 .container {
-  width: 100vw;
-  min-width: 100%;
+  width: 100%;
   background: rgba(255,255,255,0.08);
   border-radius: 18px;
   box-shadow: 0 8px 32px rgba(30,30,47,0.18);
   text-align: center;
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.18);
+  flex: 1 1 0;
 }
 
 .container h1 {
@@ -34,6 +35,8 @@ body {
   flex-direction: column;
   gap: 1em;
   width: 100%;
+  flex: 1 1 0;
+
 }
 
 .league-row {
@@ -41,12 +44,12 @@ body {
   flex-direction: row;
   gap: 1em;
   width: 100%;
-  justify-content: stretch;
+  flex: 1 1 0;
+  align-items: stretch;
 }
 
 .league-card.small {
   flex: 1 1 0;
-  min-width: 0;
   margin: 0.5em 0;
   background: rgba(255,255,255,0.14);
   border-radius: 12px;
@@ -126,7 +129,6 @@ body {
   align-items: center;
   gap: 0.7em;
   min-width: 100%;
-  max-width: 260px;
   background: linear-gradient(135deg, #646cff 0%, #3a3a6c 100%);
   color: #fff;
   border-radius: 10px;

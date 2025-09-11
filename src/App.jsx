@@ -85,9 +85,9 @@ function LeagueCard({ initialLeagueId }) {
       {data && data.league && data.standings && (
         <>
           <div className="league-info small">
-            <span className="league-name">Name: <b>{data.league.name}</b></span>
-            <span className="league-id">ID: <b>{data.league.id}</b></span>
-            <span className="league-gw-points">GW Points: <b>{data.standings.results.reduce((sum, p) => sum + (selected === p.id ? p.event_total * 2 : p.event_total), 0)}</b></span>
+            <span>Name: <b>{data.league.name}</b></span>
+            <span>ID: <b>{data.league.id}</b></span>
+            <span>GW Points: <b>{data.standings.results.reduce((sum, p) => sum + (selected === p.id ? p.event_total * 2 : p.event_total), 0)}</b></span>
           </div>
           <div className="players-vertical">
             {data.standings.results.map((player) => (
