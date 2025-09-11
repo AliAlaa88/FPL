@@ -1,0 +1,8 @@
+.multi-league-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1em;
+  width: 100%;
+  flex: 1 1 0;
+  padding: 0 1em;
+}
