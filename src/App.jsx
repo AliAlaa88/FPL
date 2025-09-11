@@ -1,22 +1,23 @@
-
-import { useState } from 'react';
-import './App.css';
+import { useState, useEffect } from 'react';
 import './App.css';
 
 const NUM_CARDS = 20;
-const CARDS_PER_ROW = 5;
+const CARDS_PER_ROW = 4;
+
+const ids = [
+  418940, 307140, 767007, 805231, 712543, 863026, 673216, 1074101, 666058, 572827, 348627, 384960, 2193, 2587078, 797003, 798822, 400715, 412945, 601655, 576117
+];
 
 const App = () => {
   return (
     <div className="container">
-      <h1>FPL Classic League Standings</h1>
+      <h1>Football Land</h1>
       <div className="multi-league-list">
-        {Array.from({ length: Math.ceil(NUM_CARDS / CARDS_PER_ROW) }).map((_, rowIdx) => (
+        {Array.from({ length: Math.ceil(ids.length / CARDS_PER_ROW) }).map((_, rowIdx) => (
           <div className="league-row" key={rowIdx}>
-            {Array.from({ length: CARDS_PER_ROW }).map((_, colIdx) => {
-              const idx = rowIdx * CARDS_PER_ROW + colIdx;
-              return idx < NUM_CARDS ? <LeagueCard key={idx} /> : null;
-            })}
+            {ids.slice(rowIdx * CARDS_PER_ROW, (rowIdx + 1) * CARDS_PER_ROW).map((id, colIdx) => (
+              <LeagueCard key={id} initialLeagueId={id} />
+            ))}
           </div>
         ))}
       </div>
@@ -24,24 +25,30 @@ const App = () => {
   );
 };
 
-function LeagueCard() {
-  const [leagueId, setLeagueId] = useState('');
+function LeagueCard({ initialLeagueId }) {
+  const [leagueId, setLeagueId] = useState(initialLeagueId ? initialLeagueId.toString() : '');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
 
+  // Fetch data initially if initialLeagueId is provided
+  useEffect(() => {
+    if (initialLeagueId) {
+      fetchStandingsById(initialLeagueId);
+    }
+    // eslint-disable-next-line
+  }, [initialLeagueId]);
+
   const handleChange = (e) => {
     setLeagueId(e.target.value);
   };
 
-  const fetchStandings = async (e) => {
-    e.preventDefault();
-    if (!leagueId) return;
+  const fetchStandingsById = async (id) => {
     setLoading(true);
     setError(null);
     setData(null);
-    let url = `/api/leagues-classic/${leagueId}/standings`;
+    let url = `/api/leagues-classic/${id}/standings`;
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch');
@@ -52,6 +59,12 @@ function LeagueCard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchStandings = async (e) => {
+    e.preventDefault();
+    if (!leagueId) return;
+    fetchStandingsById(leagueId);
   };
 
   return (
@@ -71,10 +84,10 @@ function LeagueCard() {
       {error && <p className="error">Error: {error}</p>}
       {data && data.league && data.standings && (
         <>
-          <h2 className="league-title">{data.league.name}</h2>
           <div className="league-info small">
-            <span>ID: <b>{data.league.id}</b></span>
-            <span style={{marginLeft: '0.5em'}}>GW Points: <b>{data.standings.results.reduce((sum, p) => sum + (selected === p.id ? p.event_total * 2 : p.event_total), 0)}</b></span>
+            <span className="league-name">Name: <b>{data.league.name}</b></span>
+            <span className="league-id">ID: <b>{data.league.id}</b></span>
+            <span className="league-gw-points">GW Points: <b>{data.standings.results.reduce((sum, p) => sum + (selected === p.id ? p.event_total * 2 : p.event_total), 0)}</b></span>
           </div>
           <div className="players-vertical">
             {data.standings.results.map((player) => (
@@ -95,10 +108,9 @@ function LeagueCard() {
 
 function PlayerCard({ player, selected, onSelect, doubled }) {
   return (
-    <div className={`player-card vertical${selected ? ' selected' : ''}`} onClick={onSelect}>
-      <span className="player-name">{player.player_name}</span>
+    <div className={`player-card horizontal${selected ? ' selected' : ''}`} onClick={onSelect}>
       <span className="player-id">ID: {player.id}</span>
-      <span className="entry-name">Team: {player.entry_name}</span>
+      <span className="entry-name">{player.entry_name}</span>
       <span className="event-total">GW Points: <b>{doubled ? player.event_total * 2 : player.event_total}</b></span>
     </div>
   );
