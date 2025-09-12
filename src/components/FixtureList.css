@@ -1,0 +1,10 @@
+.fixtureList {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(30, 30, 47, 0.18);
+  text-align: center;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  flex: 1 1 0;
+}

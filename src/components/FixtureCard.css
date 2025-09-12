@@ -1,0 +1,33 @@
+.fixture-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1.2rem;
+  transition: box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.fixture-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.fixture-card b {
+  color: #1976d2;
+}
+
+.fixture-card div {
+  font-size: 1rem;
+  margin-top: 0.2rem;
+  color: #444;
+}
+
+.fixture-card .winner {
+  color: #388e3c;
+  font-weight: bold;
+}
