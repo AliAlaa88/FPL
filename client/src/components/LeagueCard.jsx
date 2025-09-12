@@ -9,7 +9,7 @@ function LeagueCard({ initialLeagueId }) {
   );
   const [data, setData] = useState(null);
   // eslint-disable-next-line no-unused-vars
-  const { leagues, setLeagues } = useLeagues();
+  const { leagues, setLeagues, leaguePoints, setLeaguePoints } = useLeagues();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -46,16 +46,23 @@ function LeagueCard({ initialLeagueId }) {
       setLeagues((prevLeagues) => {
         // Remove any existing league with the same id
         const filtered = prevLeagues.filter((l) => l.id !== json.league?.id);
-        return [
-          ...filtered,
-          {
+        const newLeague = {
             id: json.league.id,
             name: json.league.name,
             results: json.standings.results,
             totalPoints,
-          },
+          }
+        return [
+          ...filtered,
+          newLeague
         ];
       });
+      
+      // Set league points separately
+      setLeaguePoints((prevPoints) => ({
+        ...prevPoints,
+        [json.league.name]: {baseLeaguePoints: 9, liveLeaguePoints: 9, baseTotalPoints:1000, liveTotalPoints:1000}
+      }));
     } catch (err) {
       setError(err.message);
     } finally {

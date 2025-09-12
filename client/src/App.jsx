@@ -1,6 +1,7 @@
 import LeagueList from "./components/LeagueList";
-import "./App.css";
 import FixtureList from "./components/FixtureList";
+import Standing from "./components/Standing";
+import "./App.css";
 
 const App = () => {
   return (
@@ -11,6 +12,9 @@ const App = () => {
       </div>
       <div className="container">
         <FixtureList />
+      </div>
+      <div className="container">
+        <Standing />
       </div>
     </div>
   );
