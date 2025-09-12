@@ -13,7 +13,7 @@ function LeagueCard({ initialLeagueId }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
-
+  const [totalPoints, setTotalPoints] = useState(0);
   // Fetch data initially if initialLeagueId is provided
   useEffect(() => {
     if (initialLeagueId) {
@@ -37,12 +37,24 @@ function LeagueCard({ initialLeagueId }) {
       const json = await res.json();
       setData(json);
       // Add or update league data in context
+      const totalPoints = json.standings.results.reduce(
+        (sum, p) =>
+          sum + (selected === p.id ? p.event_total * 2 : p.event_total),
+        0
+      );
+      setTotalPoints(totalPoints);
       setLeagues((prevLeagues) => {
         // Remove any existing league with the same id
-        const filtered = prevLeagues.filter(
-          (l) => l.league?.id !== json.league?.id
-        );
-        return [...filtered, json];
+        const filtered = prevLeagues.filter((l) => l.id !== json.league?.id);
+        return [
+          ...filtered,
+          {
+            id: json.league.id,
+            name: json.league.name,
+            results: json.standings.results,
+            totalPoints,
+          },
+        ];
       });
     } catch (err) {
       setError(err.message);
@@ -56,7 +68,23 @@ function LeagueCard({ initialLeagueId }) {
     if (!leagueId) return;
     fetchStandingsById(leagueId);
   };
-
+  const handleSelectPlayer = (playerId) => {
+    const newSelected = selected === playerId ? null : playerId;
+    setSelected(newSelected);
+    // Recalculate total points
+    const newTotal = data.standings.results.reduce(
+      (sum, p) =>
+        sum + (newSelected === p.id ? p.event_total * 2 : p.event_total),
+      0
+    );
+    setTotalPoints(newTotal);
+    setLeagues((prevLeagues) => {
+      return prevLeagues.map((l) =>
+        l.id === data.league.id ? { ...l, totalPoints: newTotal } : l
+      );
+    });
+    console.log("leagues after player select:", leagues);
+  };
   return (
     <div className="league-card small">
       <form onSubmit={fetchStandings} className="form-inline">
@@ -82,15 +110,7 @@ function LeagueCard({ initialLeagueId }) {
               ID: <b>{data.league.id}</b>
             </span>
             <span>
-              GW Points:{" "}
-              <b>
-                {data.standings.results.reduce(
-                  (sum, p) =>
-                    sum +
-                    (selected === p.id ? p.event_total * 2 : p.event_total),
-                  0
-                )}
-              </b>
+              GW Points: <b>{totalPoints}</b>
             </span>
           </div>
           <div className="players-vertical">
@@ -99,7 +119,7 @@ function LeagueCard({ initialLeagueId }) {
                 key={player.id}
                 player={player}
                 selected={selected === player.id}
-                onSelect={() => setSelected(player.id)}
+                onSelect={() => handleSelectPlayer(player.id)}
                 doubled={selected === player.id}
               />
             ))}
