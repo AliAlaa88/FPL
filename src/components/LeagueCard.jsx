@@ -8,6 +8,7 @@ function LeagueCard({ initialLeagueId }) {
     initialLeagueId ? initialLeagueId.toString() : ""
   );
   const [data, setData] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const { leagues, setLeagues } = useLeagues();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
