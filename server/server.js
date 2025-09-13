@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
+import sequelize from "./config/db.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -27,6 +28,12 @@ app.get("/api/leagues-classic/:league_id/standings", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Proxy server running on port ${PORT}`);
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
 });
