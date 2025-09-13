@@ -2,12 +2,19 @@ import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
 import sequelize from "./config/db.js";
+import apiRoutes from "./routes/index.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Middleware
 app.use(cors());
+app.use(express.json());
 
+// API Routes
+app.use("/api", apiRoutes);
+
+// Proxy route for external FPL API
 app.get("/api/leagues-classic/:league_id/standings", async (req, res) => {
   const { league_id } = req.params;
   const { page_new_entries, page_standings, phase } = req.query;
@@ -26,6 +33,15 @@ app.get("/api/leagues-classic/:league_id/standings", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch data" });
   }
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Something went wrong!",
+  });
 });
 
 app.listen(PORT, async () => {
