@@ -23,13 +23,6 @@ class TeamController {
     try {
       const { id } = req.body;
 
-      if (!id) {
-        return res.status(400).json({
-          success: false,
-          message: "Team ID is required",
-        });
-      }
-
       const team = await TeamService.createTeam({ id });
       res.status(201).json({
         success: true,
@@ -49,14 +42,7 @@ class TeamController {
     try {
       const { id } = req.params;
 
-      if (!id) {
-        return res.status(400).json({
-          success: false,
-          message: "Team ID is required",
-        });
-      }
-
-      const result = await TeamService.deleteTeam(parseInt(id));
+      const result = await TeamService.deleteTeam(id);
       res.status(200).json({
         success: true,
         message: result.message,

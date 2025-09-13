@@ -23,14 +23,7 @@ class GameWeekController {
     try {
       const { id } = req.params;
 
-      if (!id) {
-        return res.status(400).json({
-          success: false,
-          message: "GameWeek ID is required",
-        });
-      }
-
-      const gameweek = await GameWeekService.getGameWeekById(parseInt(id));
+      const gameweek = await GameWeekService.getGameWeekById(id);
       res.status(200).json({
         success: true,
         data: gameweek,
@@ -49,16 +42,7 @@ class GameWeekController {
     try {
       const { weekNumber } = req.params;
 
-      if (!weekNumber) {
-        return res.status(400).json({
-          success: false,
-          message: "Week number is required",
-        });
-      }
-
-      const gameweek = await GameWeekService.getGameWeekByNumber(
-        parseInt(weekNumber)
-      );
+      const gameweek = await GameWeekService.getGameWeekByNumber(weekNumber);
       res.status(200).json({
         success: true,
         data: gameweek,
@@ -77,16 +61,7 @@ class GameWeekController {
     try {
       const { id } = req.params;
 
-      if (!id) {
-        return res.status(400).json({
-          success: false,
-          message: "GameWeek ID is required",
-        });
-      }
-
-      const gameweek = await GameWeekService.getGameWeekWithFixtures(
-        parseInt(id)
-      );
+      const gameweek = await GameWeekService.getGameWeekWithFixtures(id);
       res.status(200).json({
         success: true,
         data: gameweek,
@@ -104,13 +79,6 @@ class GameWeekController {
   async createGameWeek(req, res) {
     try {
       const { week_number } = req.body;
-
-      if (!week_number) {
-        return res.status(400).json({
-          success: false,
-          message: "Week number is required",
-        });
-      }
 
       const gameweek = await GameWeekService.createGameWeek({ week_number });
       res.status(201).json({
