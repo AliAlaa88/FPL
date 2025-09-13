@@ -1,8 +1,31 @@
 .multi-league-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1em;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
   width: 100%;
   flex: 1 1 0;
-  padding: 0 1em;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .multi-league-list {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .multi-league-list {
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    max-width: none;
+    margin: 0;
+  }
+}
+
+@media (min-width: 1600px) {
+  .multi-league-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }

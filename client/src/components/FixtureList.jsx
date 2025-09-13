@@ -52,8 +52,8 @@ function FixtureList() {
 
   return (
     <div className="fixtureList">
-      Fixtures List
-      <div style={{ display: "flex", gap: "1rem", margin: "1rem 0" }}>
+      <h2>Fixtures List</h2>
+      <div className="fixtures-controls">
         <select value={league1} onChange={(e) => setLeague1(e.target.value)}>
           <option value="">Select League 1</option>
           {leagues.map((league) => (

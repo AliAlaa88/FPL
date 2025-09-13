@@ -1,10 +1,112 @@
 .fixtureList {
   width: 100%;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  box-shadow: 0 8px 32px rgba(30, 30, 47, 0.18);
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
   text-align: center;
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: none;
+  border: none;
   flex: 1 1 0;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.fixtureList::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+      circle at 20% 80%,
+      rgba(100, 108, 255, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(59, 130, 246, 0.05) 0%,
+      transparent 50%
+    );
+  pointer-events: none;
+}
+
+.fixtureList > *:not(.fixtureList::before) {
+  position: relative;
+  z-index: 1;
+}
+
+.fixtureList h2 {
+  margin: 0 0 2rem 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.025em;
+}
+
+.fixtures-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.fixtures-controls select,
+.fixtures-controls button {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(100, 116, 139, 0.4);
+  background: rgba(30, 41, 59, 0.9);
+  color: #f1f5f9;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.fixtures-controls select:focus,
+.fixtures-controls button:focus {
+  border-color: #646cff;
+  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.1);
+}
+
+.fixtures-controls button {
+  background: linear-gradient(135deg, #646cff 0%, #3b82f6 100%);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  min-width: 120px;
+}
+
+.fixtures-controls button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.3);
+}
+
+.fixtures-controls button:disabled {
+  background: #475569;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.fixtures-controls span {
+  font-weight: 600;
+  color: #cbd5e1;
+  font-size: 1.1rem;
+}
+
+.fixtures-container {
+  margin-top: 2rem;
 }
