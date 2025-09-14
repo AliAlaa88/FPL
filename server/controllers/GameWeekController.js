@@ -97,10 +97,15 @@ class GameWeekController {
   // GET /api/gameweeks/current - Get current gameweek
   async getCurrentGameWeek(req, res) {
     try {
-      const gameweek = await GameWeekService.getCurrentGameWeek();
+      const response = await fetch(
+        `https://fantasy.premierleague.com/api/fixtures/`
+      );
+      const data = await response.json();
       res.status(200).json({
         success: true,
-        data: gameweek,
+        data: {
+          event: data[0]?.event || null,
+        },
         message: "Current gameweek fetched successfully",
       });
     } catch (error) {
