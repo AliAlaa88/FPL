@@ -113,49 +113,51 @@ function FixtureList() {
   const availableLeagues = getAvailableLeagues(league2);
 
   return (
-    <div className="fixtureList">
-      <h2>Fixtures List</h2>
-      <div className="fixtures-controls">
-        <select value={league1} onChange={(e) => setLeague1(e.target.value)}>
-          <option value="">Select League 1</option>
-          {availableLeagues.map((league) => (
-            <option key={league.id} value={league.id}>
-              {league.name}
-            </option>
-          ))}
-        </select>
-        <span>vs</span>
-        <select value={league2} onChange={(e) => setLeague2(e.target.value)}>
-          <option value="">Select League 2</option>
-          {availableLeagues.map((league) => (
-            <option key={league.id} value={league.id}>
-              {league.name}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={handleAddFixture}
-          disabled={!league1 || !league2 || league1 === league2}
-        >
-          Add Fixture
-        </button>
-      </div>
-      <div className="fixtures-container">
-        {fixtures.map((fixture) => {
-          const fixtureData = getFixtureData(fixture);
-          if (!fixtureData.league1 || !fixtureData.league2) return null;
+    <div className="container">
+      <div className="fixtureList">
+        <h2>Fixtures List</h2>
+        <div className="fixtures-controls">
+          <select value={league1} onChange={(e) => setLeague1(e.target.value)}>
+            <option value="">Select League 1</option>
+            {availableLeagues.map((league) => (
+              <option key={league.id} value={league.id}>
+                {league.name}
+              </option>
+            ))}
+          </select>
+          <span>vs</span>
+          <select value={league2} onChange={(e) => setLeague2(e.target.value)}>
+            <option value="">Select League 2</option>
+            {availableLeagues.map((league) => (
+              <option key={league.id} value={league.id}>
+                {league.name}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={handleAddFixture}
+            disabled={!league1 || !league2 || league1 === league2}
+          >
+            Add Fixture
+          </button>
+        </div>
+        <div className="fixtures-container">
+          {fixtures.map((fixture) => {
+            const fixtureData = getFixtureData(fixture);
+            if (!fixtureData.league1 || !fixtureData.league2) return null;
 
-          return (
-            <FixtureCard
-              league1={fixtureData.league1.name}
-              league2={fixtureData.league2.name}
-              league1Points={fixtureData.league1.totalPoints}
-              league2Points={fixtureData.league2.totalPoints}
-              key={fixture.id}
-              handleStandingChange={handleStandingChange}
-            />
-          );
-        })}
+            return (
+              <FixtureCard
+                league1={fixtureData.league1.name}
+                league2={fixtureData.league2.name}
+                league1Points={fixtureData.league1.totalPoints}
+                league2Points={fixtureData.league2.totalPoints}
+                key={fixture.id}
+                handleStandingChange={handleStandingChange}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );

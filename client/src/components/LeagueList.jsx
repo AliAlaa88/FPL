@@ -1,16 +1,38 @@
-import LeagueCard from './LeagueCard';
-import './LeagueList.css';
+import { useState, useEffect } from "react";
+import LeagueCard from "./LeagueCard";
+import "./LeagueList.css";
 
-const ids = [
-  418940, 307140, 767007, 805231, 712543, 863026, 673216, 1074101, 666058, 572827, 348627, 384960, 2193, 2587078, 797003, 798822, 400715, 412945, 601655, 576117
-];
+function LeagueList({ currentGameWeek }) {
+  const [teams, setTeams] = useState([]);
 
-function LeagueList() {
+  useEffect(() => {
+    const fetchTeams = async () => {
+      const response = await fetch(`http://localhost:3001/api/teams/${currentGameWeek}`);
+      if (!response.ok) {
+        console.error('Failed to fetch teams');
+        return;
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        console.error('API error:', data.message);
+        return;
+      }
+
+      setTeams(data.data || []);
+      console.log(data.message, data.data);
+    };
+
+    fetchTeams();
+  }, [currentGameWeek]);
+
   return (
-    <div className="multi-league-list">
-      {ids.map((id) => (
-        <LeagueCard key={id} initialLeagueId={id} />
-      ))}
+    <div className="container">
+      <div className="multi-league-list">
+        {teams.map((team) => (
+          <LeagueCard key={team.id} team={team} />
+        ))}
+      </div>
     </div>
   );
 }
