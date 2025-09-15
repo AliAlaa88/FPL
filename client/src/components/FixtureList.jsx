@@ -12,7 +12,7 @@ function FixtureList() {
   // Get leagues that are already used in fixtures
   const getUsedLeagues = () => {
     const used = new Set();
-    fixtures.forEach(fixture => {
+    fixtures.forEach((fixture) => {
       used.add(fixture.league1Id);
       used.add(fixture.league2Id);
     });
@@ -22,7 +22,7 @@ function FixtureList() {
   // Get available leagues for selection
   const getAvailableLeagues = (excludeId = null) => {
     const usedLeagues = getUsedLeagues();
-    return leagues.filter(league => {
+    return leagues.filter((league) => {
       const leagueId = league.id.toString();
       return !usedLeagues.has(leagueId) || leagueId === excludeId;
     });
@@ -43,24 +43,46 @@ function FixtureList() {
     }
   };
 
-  const handleStandingChange = useCallback((league1Name, league1LeaguePoints, leage1TotalPoints, league2Name, league2LeaguePoints, leage2TotalPoints) => {
-    setLeaguePoints((prevPoints) => {
-      console.log('Previous League Points:', prevPoints[league1Name]?.basePoints, prevPoints[league2Name]?.basePoints);
-      return {
-        ...prevPoints,
-        [league1Name]: {
-          ...prevPoints[league1Name],
-          liveLeaguePoints: (prevPoints[league1Name]?.baseLeaguePoints || 0) + league1LeaguePoints,
-          liveTotalPoints: (prevPoints[league1Name]?.baseTotalPoints || 0) + leage1TotalPoints
-        },
-        [league2Name]: {
-          ...prevPoints[league2Name],
-          liveLeaguePoints: (prevPoints[league2Name]?.baseLeaguePoints || 0) + league2LeaguePoints,
-          liveTotalPoints: (prevPoints[league2Name]?.baseTotalPoints || 0) + leage2TotalPoints
-        }
-      };
-    });
-  }, [setLeaguePoints]);
+  const handleStandingChange = useCallback(
+    (
+      league1Name,
+      league1LeaguePoints,
+      leage1TotalPoints,
+      league2Name,
+      league2LeaguePoints,
+      leage2TotalPoints
+    ) => {
+      setLeaguePoints((prevPoints) => {
+        console.log(
+          "Previous League Points:",
+          prevPoints[league1Name]?.basePoints,
+          prevPoints[league2Name]?.basePoints
+        );
+        return {
+          ...prevPoints,
+          [league1Name]: {
+            ...prevPoints[league1Name],
+            liveLeaguePoints:
+              (prevPoints[league1Name]?.baseLeaguePoints || 0) +
+              league1LeaguePoints,
+            liveTotalPoints:
+              (prevPoints[league1Name]?.baseTotalPoints || 0) +
+              leage1TotalPoints,
+          },
+          [league2Name]: {
+            ...prevPoints[league2Name],
+            liveLeaguePoints:
+              (prevPoints[league2Name]?.baseLeaguePoints || 0) +
+              league2LeaguePoints,
+            liveTotalPoints:
+              (prevPoints[league2Name]?.baseTotalPoints || 0) +
+              leage2TotalPoints,
+          },
+        };
+      });
+    },
+    [setLeaguePoints]
+  );
 
   // Update fixtures when leagues change
   useEffect(() => {
