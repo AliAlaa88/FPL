@@ -10,9 +10,9 @@ const router = express.Router();
 router.use("/fixtures", fixtureRoutes);
 router.use("/teams", teamRoutes);
 router.use("/gameweeks", gameWeekRoutes);
-router.get("/test", async (req, res) => {
-  const teams = await TeamService.getAllTeamsWithPlayers();
-  console.log(teams);
-  res.send("API is working");
-});
+// router.get("/test", async (req, res) => {
+//   const teams = await TeamService.getAllTeamsWithPlayers();
+//   console.log(teams);
+//   res.send("API is working");
+// });
 export default router;
