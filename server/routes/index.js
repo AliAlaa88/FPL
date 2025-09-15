@@ -2,7 +2,6 @@ import express from "express";
 import fixtureRoutes from "./fixtureRoutes.js";
 import teamRoutes from "./teamRoutes.js";
 import gameWeekRoutes from "./gameWeekRoutes.js";
-import TeamService from "../services/TeamService.js";
 
 const router = express.Router();
 
