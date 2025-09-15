@@ -10,8 +10,8 @@ const Team = sequelize.define(
       autoIncrement: true,
     },
     name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

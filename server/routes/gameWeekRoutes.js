@@ -1,41 +1,41 @@
 import express from "express";
-import GameWeekController from "../controllers/GameWeekController.js";
+import DIContainer from "../container/DIContainer.js";
 import { validate, gameWeekSchemas } from "../middleware/index.js";
 
 const router = express.Router();
+const gameWeekController = DIContainer.get("GameWeekController");
 
 // GET /api/gameweeks - Get all gameweeks
-router.get("/", GameWeekController.getAllGameWeeks);
+router.get("/", gameWeekController.getAllGameWeeks);
 
 // GET /api/gameweeks/current - Get current gameweek (specific route first)
-router.get("/current", GameWeekController.getCurrentGameWeek);
-
-// GET /api/gameweeks/week/:weekNumber - Get gameweek by week number
-router.get(
-  "/week/:weekNumber",
-  validate(gameWeekSchemas.getGameWeekByNumber),
-  GameWeekController.getGameWeekByNumber
-);
+router.get("/current", gameWeekController.getCurrentGameWeek);
 
 // POST /api/gameweeks - Create new gameweek
 router.post(
   "/",
   validate(gameWeekSchemas.createGameWeek),
-  GameWeekController.createGameWeek
+  gameWeekController.createGameWeek
 );
 
 // GET /api/gameweeks/:id/fixtures - Get gameweek with fixtures
 router.get(
   "/:id/fixtures",
   validate(gameWeekSchemas.getGameWeekById),
-  GameWeekController.getGameWeekWithFixtures
+  gameWeekController.getGameWeekWithFixtures
 );
+
+// PUT /api/gameweeks/:id - Update gameweek
+router.put("/:id", gameWeekController.updateGameWeek);
+
+// DELETE /api/gameweeks/:id - Delete gameweek
+router.delete("/:id", gameWeekController.deleteGameWeek);
 
 // GET /api/gameweeks/:id - Get gameweek by ID
 router.get(
   "/:id",
   validate(gameWeekSchemas.getGameWeekById),
-  GameWeekController.getGameWeekById
+  gameWeekController.getGameWeekById
 );
 
 export default router;

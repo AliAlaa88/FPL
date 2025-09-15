@@ -1,12 +1,12 @@
-import { GameWeek } from "../models/index.js";
+export class GameWeekService {
+  constructor(gameWeekRepository) {
+    this.gameWeekRepository = gameWeekRepository;
+  }
 
-class GameWeekService {
   // Get all gameweeks
   async getAllGameWeeks() {
     try {
-      const gameweeks = await GameWeek.findAll({
-        order: [["week_number", "ASC"]],
-      });
+      const gameweeks = await this.gameWeekRepository.findAll();
       return gameweeks;
     } catch (error) {
       throw new Error(`Error fetching gameweeks: ${error.message}`);
@@ -16,7 +16,7 @@ class GameWeekService {
   // Get gameweek by ID
   async getGameWeekById(id) {
     try {
-      const gameweek = await GameWeek.findByPk(id);
+      const gameweek = await this.gameWeekRepository.findById(id);
       if (!gameweek) {
         throw new Error("GameWeek not found");
       }
@@ -29,9 +29,9 @@ class GameWeekService {
   // Get gameweek by week number
   async getGameWeekByNumber(weekNumber) {
     try {
-      const gameweek = await GameWeek.findOne({
-        where: { week_number: weekNumber },
-      });
+      const gameweek = await this.gameWeekRepository.findByWeekNumber(
+        weekNumber
+      );
       if (!gameweek) {
         throw new Error("GameWeek not found");
       }
@@ -46,15 +46,20 @@ class GameWeekService {
     try {
       const { week_number } = gameweekData;
 
+      // Business logic validation
+      if (!week_number) {
+        throw new Error("Week number is required");
+      }
+
       // Check if gameweek already exists
-      const existingGameWeek = await GameWeek.findOne({
-        where: { week_number },
-      });
+      const existingGameWeek = await this.gameWeekRepository.findByWeekNumber(
+        week_number
+      );
       if (existingGameWeek) {
         throw new Error("GameWeek already exists");
       }
 
-      const gameweek = await GameWeek.create({ week_number });
+      const gameweek = await this.gameWeekRepository.create({ week_number });
       return gameweek;
     } catch (error) {
       throw new Error(`Error creating gameweek: ${error.message}`);
@@ -64,12 +69,13 @@ class GameWeekService {
   // Update gameweek
   async updateGameWeek(id, gameweekData) {
     try {
-      const gameweek = await GameWeek.findByPk(id);
-      if (!gameweek) {
+      const updatedGameWeek = await this.gameWeekRepository.update(
+        id,
+        gameweekData
+      );
+      if (!updatedGameWeek) {
         throw new Error("GameWeek not found");
       }
-
-      const updatedGameWeek = await gameweek.update(gameweekData);
       return updatedGameWeek;
     } catch (error) {
       throw new Error(`Error updating gameweek: ${error.message}`);
@@ -79,12 +85,10 @@ class GameWeekService {
   // Delete gameweek
   async deleteGameWeek(id) {
     try {
-      const gameweek = await GameWeek.findByPk(id);
-      if (!gameweek) {
+      const deleted = await this.gameWeekRepository.delete(id);
+      if (!deleted) {
         throw new Error("GameWeek not found");
       }
-
-      await gameweek.destroy();
       return { message: "GameWeek deleted successfully" };
     } catch (error) {
       throw new Error(`Error deleting gameweek: ${error.message}`);
@@ -94,19 +98,10 @@ class GameWeekService {
   // Get gameweek with all fixtures
   async getGameWeekWithFixtures(id) {
     try {
-      const gameweek = await GameWeek.findByPk(id, {
-        include: [
-          {
-            association: "fixtures",
-            include: [{ association: "homeTeam" }, { association: "awayTeam" }],
-          },
-        ],
-      });
-
+      const gameweek = await this.gameWeekRepository.findWithFixtures(id);
       if (!gameweek) {
         throw new Error("GameWeek not found");
       }
-
       return gameweek;
     } catch (error) {
       throw new Error(
@@ -118,42 +113,11 @@ class GameWeekService {
   // Get current gameweek (latest one)
   async getCurrentGameWeek() {
     try {
-      const currentGameweek = await GameWeek.findOne({
-        order: [["week_number", "DESC"]],
-      });
+      const currentGameweek =
+        await this.gameWeekRepository.getCurrentGameWeek();
       return currentGameweek;
     } catch (error) {
       throw new Error(`Error fetching current gameweek: ${error.message}`);
-    }
-  }
-
-  // Create multiple gameweeks
-  async createMultipleGameWeeks(gameweeksData) {
-    try {
-      const gameweeks = await GameWeek.bulkCreate(gameweeksData, {
-        validate: true,
-        ignoreDuplicates: true,
-      });
-      return gameweeks;
-    } catch (error) {
-      throw new Error(`Error creating gameweeks: ${error.message}`);
-    }
-  }
-
-  // Get gameweeks in range
-  async getGameWeeksInRange(startWeek, endWeek) {
-    try {
-      const gameweeks = await GameWeek.findAll({
-        where: {
-          week_number: {
-            [Op.between]: [startWeek, endWeek],
-          },
-        },
-        order: [["week_number", "ASC"]],
-      });
-      return gameweeks;
-    } catch (error) {
-      throw new Error(`Error fetching gameweeks in range: ${error.message}`);
     }
   }
 }

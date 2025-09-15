@@ -1,207 +1,113 @@
-import TeamService from "../services/TeamService.js";
-
-async function getTeamPlayers(teamid) {
-  try {
-    const response = await fetch(
-      `https://fantasy.premierleague.com/api/leagues-classic/${teamid}/standings/`
-    );
-    const data = await response.json();
-    return data.standings.results;
-  } catch (error) {
-    console.error(`Error fetching data for team ${teamid}:`, error.message);
-    return [];
+export class TeamController {
+  constructor(teamService) {
+    this.teamService = teamService;
   }
-}
 
-// Helper function: Get teams with their players
-async function getTeamsWithPlayers(teams) {
-  const teamPromises = teams.map(async (team) => {
-    const team_players = await getTeamPlayers(team.id);
-    return {
-      id: team.id,
-      name: team.name,
-      team_players: team_players,
-    };
-  });
-
-  return await Promise.all(teamPromises);
-}
-
-// Helper function: Add gameweek data to teams
-async function addGameweekDataToTeams(teams, gameweekNumber) {
-  const teamsWithPointsPromises = teams.map(async (team, teamIndex) => {
-    // Rate limiting: Add small delay between teams
-    if (teamIndex > 0) {
-      await new Promise((resolve) => setTimeout(resolve, 100 * teamIndex));
-    }
-
-    const playersWithGameweekData = await getPlayersGameweekData(
-      team.team_players,
-      gameweekNumber
-    );
-
-    return {
-      ...team,
-      team_players: playersWithGameweekData,
-    };
-  });
-
-  return await Promise.all(teamsWithPointsPromises);
-}
-
-// Helper function: Get gameweek data for all players in a team
-async function getPlayersGameweekData(players, gameweekNumber) {
-  const playerPromises = players.map(async (player) => {
-    return await getPlayerGameweekData(player, gameweekNumber);
-  });
-
-  return await Promise.all(playerPromises);
-}
-
-// Helper function: Get individual player's gameweek data
-async function getPlayerGameweekData(player, gameweekNumber) {
-  try {
-    const response = await fetch(
-      `https://fantasy.premierleague.com/api/entry/${player.entry}/history/`
-    );
-
-    if (!response.ok) {
-      return {
-        ...player,
-        gameweek_points: 0,
-        error: `HTTP ${response.status}`,
-      };
-    }
-
-    const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      return {
-        ...player,
-        gameweek_points: 0,
-        error: "Non-JSON response",
-      };
-    }
-
-    const data = await response.json();
-    const currentSeasonHistory = data.current || [];
-
-    const gameweekData = currentSeasonHistory.find(
-      (gw) => gw.event === gameweekNumber
-    );
-
-    return {
-      ...player,
-      gameweek_points: gameweekData?.points || 0,
-      gameweek_rank: gameweekData?.rank || null,
-      gameweek_transfers: gameweekData?.event_transfers || 0,
-      gameweek_transfers_cost: gameweekData?.event_transfers_cost || 0,
-      total_points: gameweekData?.total_points || 0,
-    };
-  } catch (error) {
-    return {
-      ...player,
-      gameweek_points: 0,
-      error: error.message,
-    };
-  }
-}
-
-class TeamController {
-  // GET /api/teams - Returns array of 20 teams with all info (id, name, team_points, players[])
-  async getAllTeams(req, res) {
+  // Get all teams
+  getAllTeams = async (req, res) => {
     try {
-      const teams = await TeamService.getAllTeams();
-
-      // Make all API calls concurrently using Promise.all and the getTeamPlayers method
-      const teamPromises = teams.map(async (team) => {
-        const team_players = await getTeamPlayers(team.id);
-        return {
-          id: team.id,
-          name: team.name,
-          team_players: team_players,
-        };
-      });
-
-      // Wait for all promises to complete
-      const newTeams = await Promise.all(teamPromises);
-
-      res.status(200).json({
-        success: true,
-        data: newTeams,
-        message: "Teams fetched successfully",
-      });
+      const teams = await this.teamService.getAllTeams();
+      res.json(teams);
     } catch (error) {
-      // console.log(error);
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      res.status(500).json({ error: error.message });
     }
-  }
-  // GET /api/teams/:gameweekNumber - Returns array of 20 teams with all info (id, name, team_points, players[])
-  async getTeamsByGameWeek(req, res) {
-    try {
-      const { gameweekNumber } = req.params;
-      const teams = await TeamService.getAllTeams();
+  };
 
-      // Get all teams with their players concurrently
-      const teamsWithPlayers = await getTeamsWithPlayers(teams);
-
-      // Fetch gameweek-specific data for all players
-      const teamsWithGameweekData = await addGameweekDataToTeams(
-        teamsWithPlayers,
-        parseInt(gameweekNumber)
-      );
-
-      res.status(200).json({
-        success: true,
-        data: teamsWithGameweekData,
-        message: `Teams for gameweek ${gameweekNumber} fetched successfully`,
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  // POST /api/teams - Takes team id, saves it to DB and calculates points from fixtures
-  async createTeam(req, res) {
-    try {
-      const { id } = req.body;
-
-      const team = await TeamService.createTeam({ id });
-      res.status(201).json({
-        success: true,
-        data: team,
-        message: "Team created/updated successfully",
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  // DELETE /api/teams/:id - Delete team
-  async deleteTeam(req, res) {
+  // Get team by ID
+  getTeamById = async (req, res) => {
     try {
       const { id } = req.params;
-
-      const result = await TeamService.deleteTeam(id);
-      res.status(200).json({
-        success: true,
-        message: result.message,
-      });
+      const team = await this.teamService.getTeamById(id);
+      res.json(team);
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      if (error.message.includes("not found")) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
     }
-  }
-}
+  };
 
-export default new TeamController();
+  // Get teams with players
+  getTeamsWithPlayers = async (req, res) => {
+    try {
+      const { gameweek } = req.query;
+      const teams = await this.teamService.getTeamsWithPlayers(gameweek);
+      res.json(teams);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  // Create team
+  createTeam = async (req, res) => {
+    try {
+      const team = await this.teamService.createTeam(req.body);
+      res.status(201).json(team);
+    } catch (error) {
+      if (
+        error.message.includes("already exists") ||
+        error.message.includes("required")
+      ) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
+
+  // Update team
+  updateTeam = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const team = await this.teamService.updateTeam(id, req.body);
+      res.json(team);
+    } catch (error) {
+      if (error.message.includes("not found")) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
+
+  // Delete team
+  deleteTeam = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await this.teamService.deleteTeam(id);
+      res.json(result);
+    } catch (error) {
+      if (error.message.includes("not found")) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
+
+  // Get team with fixtures
+  getTeamWithFixtures = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const team = await this.teamService.getTeamWithFixtures(id);
+      res.json(team);
+    } catch (error) {
+      if (error.message.includes("not found")) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
+
+  // Create multiple teams
+  createMultipleTeams = async (req, res) => {
+    try {
+      const teams = await this.teamService.createMultipleTeams(req.body);
+      res.status(201).json(teams);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+}
