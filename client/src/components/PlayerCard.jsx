@@ -6,10 +6,10 @@ function PlayerCard({ player, selected, onSelect, factor }) {
       className={`player-card horizontal${selected ? " selected" : ""}`}
       onClick={onSelect}
     >
-      <span className="player-id">ID: {player.id}</span>
-      <span className="entry-name">{player.entry_name}</span>
+      <span className="player-id">ID: {player.entry_id}</span>
+      <span className="entry-name">{player.name}</span>
       <span className="event-total">
-        GW Points: <b>{player.event_total * factor}</b>
+        GW Points: <b>{player.gameweeks[0].points * factor}</b>
       </span>
     </div>
   );

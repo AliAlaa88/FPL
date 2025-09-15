@@ -1,12 +1,24 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { useLeagues } from "../context/leaguesContext";
 import PlayerCard from "./PlayerCard";
 import "./LeagueCard.css";
 
 function LeagueCard({ team }) {
+  team.chip = "triple"; // Default chip if not provided
   // const { leagues, setLeagues, leaguePoints, setLeaguePoints } = useLeagues(); // for live updating points in fixtures, standings
   const [selected, setSelected] = useState(team.captain_id || null);
   const [totalPoints, setTotalPoints] = useState(0);
+
+  useEffect(() => {
+    const initialTotal = team.players.reduce(
+      (sum, p) =>
+        sum +
+        p.gameweeks[0].points *
+          (1 + +(selected === p.entry_id) * (1 + +(team.chip === "triple"))),
+      0
+    );
+    setTotalPoints(initialTotal);
+  }, [team.players, selected, team.chip]);
 
   const handleSelectPlayer = (playerId) => {
     if (team.captain_id) return; // Prevent changing captain if fetched from api -> submitted already
@@ -14,11 +26,11 @@ function LeagueCard({ team }) {
     const newSelected = selected === playerId ? null : playerId;
     setSelected(newSelected);
 
-    const newTotal = team.team_players.reduce(
+    const newTotal = team.players.reduce(
       (sum, p) =>
         sum +
-        p.event_total *
-          (1 + (newSelected === p.id * (1 + (team.chip === "triple")))),
+        p.gameweeks[0].points *
+          (1 + +(newSelected === p.entry_id) * (1 + +(team.chip === "triple"))),
       0
     );
     setTotalPoints(newTotal);
@@ -32,8 +44,7 @@ function LeagueCard({ team }) {
 
   return (
     <div className="league-card small">
-      {error && <p className="error">Error: {error}</p>}
-      {data && data.league && data.standings && (
+      {team && (
         <>
           <div>
             <h3 className="league-name">Chips Buttons & Submit Button</h3>
@@ -50,18 +61,19 @@ function LeagueCard({ team }) {
               GW Points: <b>{totalPoints}</b>
             </span>
             <span>
-              Chip: <b>{team.chip[(0, 3)]}</b> {/* replace by chip icon */}
+              Chip: <b>{team.chip[0]}</b> {/* replace by chip icon */}
             </span>
           </div>
           <div className="players-vertical">
-            {team.team_players.map((player) => (
+            {team.players.map((player) => (
               <PlayerCard
-                key={player.id}
+                key={player.entry_id}
                 player={player}
-                selected={selected === player.id}
-                onSelect={() => handleSelectPlayer(player.id)}
+                selected={selected === player.entry_id}
+                onSelect={() => handleSelectPlayer(player.entry_id)}
                 factor={
-                  1 + (selected === player.id * (1 + (team.chip === "triple")))
+                  1 +
+                  +(selected === player.entry_id) * (1 + +(team.chip === "triple"))
                 }
               />
             ))}

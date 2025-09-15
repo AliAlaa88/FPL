@@ -26,10 +26,12 @@ const App = () => {
         return response.json();
       })
       .then(data => {
-        if (data.success && data.data && data.data.event) {
-          const fetchedGW = parseInt(data.data.event);
+        if (data.week_number) {
+          const fetchedGW = parseInt(data.week_number);
           setCurrentGameWeek(fetchedGW);
           setMaxGameWeek(fetchedGW);
+        } else {
+          console.error('Invalid data format:', data);
         }
       })
       .catch(error => {
@@ -48,8 +50,8 @@ const App = () => {
       />
       <div className="app">
           <LeagueList currentGameWeek={currentGameWeek} />
-          <FixtureList currentGameWeek={currentGameWeek} />
-          <Standing currentGameWeek={currentGameWeek} />
+          {/* <FixtureList currentGameWeek={currentGameWeek} /> */}
+          {/* <Standing currentGameWeek={currentGameWeek} /> */}
       </div>
     </>
   );

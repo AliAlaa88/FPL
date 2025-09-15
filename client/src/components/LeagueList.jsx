@@ -7,20 +7,20 @@ function LeagueList({ currentGameWeek }) {
 
   useEffect(() => {
     const fetchTeams = async () => {
-      const response = await fetch(`http://localhost:3001/api/teams/${currentGameWeek}`);
+      const response = await fetch(`http://localhost:3001/api/teams/with-players?gameweek=${currentGameWeek}`);
       if (!response.ok) {
         console.error('Failed to fetch teams');
         return;
       }
 
       const data = await response.json();
-      if (!data.success) {
-        console.error('API error:', data.message);
+      if (!data) {
+        console.error('API error:', data);
         return;
       }
 
-      setTeams(data.data || []);
-      console.log(data.message, data.data);
+      setTeams(data || []);
+      console.log(data);
     };
 
     fetchTeams();
@@ -29,7 +29,7 @@ function LeagueList({ currentGameWeek }) {
   return (
     <div className="container">
       <div className="multi-league-list">
-        {teams.map((team) => (
+        {teams && teams.map((team) => (
           <LeagueCard key={team.id} team={team} />
         ))}
       </div>
