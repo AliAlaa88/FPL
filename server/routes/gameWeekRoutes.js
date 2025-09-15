@@ -11,13 +11,6 @@ router.get("/", gameWeekController.getAllGameWeeks);
 // GET /api/gameweeks/current - Get current gameweek (specific route first)
 router.get("/current", gameWeekController.getCurrentGameWeek);
 
-// GET /api/gameweeks/week/:weekNumber - Get gameweek by week number
-router.get(
-  "/week/:weekNumber",
-  validate(gameWeekSchemas.getGameWeekByNumber),
-  gameWeekController.getGameWeekByNumber
-);
-
 // POST /api/gameweeks - Create new gameweek
 router.post(
   "/",
