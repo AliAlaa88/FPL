@@ -1,4 +1,4 @@
-import { Team } from "../models/index.js";
+import { Player, PlayerGameWeek, Team } from "../models/index.js";
 
 class TeamService {
   // Get all teams
@@ -12,7 +12,41 @@ class TeamService {
       throw new Error(`Error fetching teams: ${error.message}`);
     }
   }
-
+  // GET Teams with Players Data
+  async getTeamsWithPlayers(gameweekNumber) {
+    try {
+      const teams = await Team.findAll({
+        include: [
+          {
+            model: Player,
+            as: "players",
+            include: [
+              {
+                model: PlayerGameWeek,
+                as: "gameweeks",
+                ...((gameweekNumber && {
+                  where: { gameweek_id: gameweekNumber },
+                }) ||
+                  {}),
+                attributes: [
+                  "gameweek_id",
+                  "player_id",
+                  "points",
+                  "total_points",
+                  "transfers",
+                  "transfers_cost",
+                ],
+              },
+            ],
+          },
+        ],
+        order: [["name", "ASC"]],
+      });
+      return teams;
+    } catch (error) {
+      throw new Error(`Error fetching teams with players: ${error.message}`);
+    }
+  }
   // Get team by ID
   async getTeamById(id) {
     try {

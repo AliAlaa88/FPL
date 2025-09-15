@@ -110,24 +110,11 @@ class TeamController {
   // GET /api/teams - Returns array of 20 teams with all info (id, name, team_points, players[])
   async getAllTeams(req, res) {
     try {
-      const teams = await TeamService.getAllTeams();
-
-      // Make all API calls concurrently using Promise.all and the getTeamPlayers method
-      const teamPromises = teams.map(async (team) => {
-        const team_players = await getTeamPlayers(team.id);
-        return {
-          id: team.id,
-          name: team.name,
-          team_players: team_players,
-        };
-      });
-
-      // Wait for all promises to complete
-      const newTeams = await Promise.all(teamPromises);
+      const teams = await TeamService.getTeamsWithPlayers();
 
       res.status(200).json({
         success: true,
-        data: newTeams,
+        data: teams,
         message: "Teams fetched successfully",
       });
     } catch (error) {
@@ -142,20 +129,10 @@ class TeamController {
   async getTeamsByGameWeek(req, res) {
     try {
       const { gameweekNumber } = req.params;
-      const teams = await TeamService.getAllTeams();
-
-      // Get all teams with their players concurrently
-      const teamsWithPlayers = await getTeamsWithPlayers(teams);
-
-      // Fetch gameweek-specific data for all players
-      const teamsWithGameweekData = await addGameweekDataToTeams(
-        teamsWithPlayers,
-        parseInt(gameweekNumber)
-      );
-
+      const teams = await TeamService.getTeamsWithPlayers(gameweekNumber);
       res.status(200).json({
         success: true,
-        data: teamsWithGameweekData,
+        data: teams,
         message: `Teams for gameweek ${gameweekNumber} fetched successfully`,
       });
     } catch (error) {
