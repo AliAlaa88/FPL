@@ -3,16 +3,17 @@ import { TeamRepository } from "../repositories/implementations/TeamRepository.j
 import { GameWeekRepository } from "../repositories/implementations/GameWeekRepository.js";
 import { FixtureRepository } from "../repositories/implementations/FixtureRepository.js";
 import { PlayerRepository } from "../repositories/implementations/PlayerRepository.js";
-
+import { standingsRepository } from "../repositories/implementations/StandingsRepository.js";
 // Services
 import { TeamService } from "../services/TeamService.js";
 import { GameWeekService } from "../services/GameWeekService.js";
 import { FixtureService } from "../services/FixtureService.js";
-
+import { standingsService } from "../services/StandingsService.js";
 // Controllers
 import { TeamController } from "../controllers/TeamController.js";
 import { GameWeekController } from "../controllers/GameWeekController.js";
 import { FixtureController } from "../controllers/FixtureController.js";
+import { StandingsController } from "../controllers/StandingsController.js";
 
 class DIContainer {
   constructor() {
@@ -27,7 +28,7 @@ class DIContainer {
     this.register("GameWeekRepository", () => new GameWeekRepository(), true);
     this.register("FixtureRepository", () => new FixtureRepository(), true);
     this.register("PlayerRepository", () => new PlayerRepository(), true);
-
+    this.register("StandingsRepository", () => new standingsRepository(), true);
     // Services (Singletons)
     this.register(
       "TeamService",
@@ -47,6 +48,12 @@ class DIContainer {
       true
     );
 
+    this.register(
+      "StandingsService",
+      () => new standingsService(this.get("StandingsRepository")),
+      true
+    );
+
     // Controllers (New instance each time)
     this.register(
       "TeamController",
@@ -63,6 +70,12 @@ class DIContainer {
     this.register(
       "FixtureController",
       () => new FixtureController(this.get("FixtureService")),
+      false
+    );
+
+    this.register(
+      "StandingsController",
+      () => new StandingsController(this.get("StandingsService")),
       false
     );
   }
