@@ -1,112 +1,115 @@
-import FixtureService from "../services/FixtureService.js";
+export class FixtureController {
+  constructor(fixtureService) {
+    this.fixtureService = fixtureService;
+  }
 
-class FixtureController {
-  // GET /api/fixtures/:gameweekNumber - Takes gameweek number and returns its fixtures
-  async getFixturesByGameWeek(req, res) {
+  // Get all fixtures
+  getAllFixtures = async (req, res) => {
     try {
-      const { gameweekNumber } = req.params;
+      const fixtures = await this.fixtureService.getAllFixtures();
+      res.json(fixtures);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
 
-      const fixtures = await FixtureService.getFixturesByGameWeek(
-        gameweekNumber
+  // Get fixture by ID
+  getFixtureById = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const fixture = await this.fixtureService.getFixtureById(id);
+      res.json(fixture);
+    } catch (error) {
+      if (error.message.includes("not found")) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
+
+  // Get fixtures by gameweek
+  getFixturesByGameWeek = async (req, res) => {
+    try {
+      const { gameWeekId } = req.params;
+      const fixtures = await this.fixtureService.getFixturesByGameWeek(
+        parseInt(gameWeekId)
       );
-      res.status(200).json({
-        success: true,
-        data: fixtures,
-        message: `Fixtures for gameweek ${gameweekNumber} fetched successfully`,
-      });
+      res.json(fixtures);
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      res.status(500).json({ error: error.message });
     }
-  }
+  };
 
-  // POST /api/fixtures/:gameweekNumber - Takes gameweek number with max 10 fixtures per gameweek
-  async createFixtures(req, res) {
+  // Get fixtures by team
+  getFixturesByTeam = async (req, res) => {
     try {
-      const { gameweekNumber } = req.params;
-      const { fixtures } = req.body;
-
-      const createdFixtures = await FixtureService.createFixturesForGameWeek(
-        gameweekNumber,
-        fixtures
+      const { teamId } = req.params;
+      const fixtures = await this.fixtureService.getFixturesByTeam(
+        parseInt(teamId)
       );
-      res.status(201).json({
-        success: true,
-        data: createdFixtures,
-        message: `Fixtures for gameweek ${gameweekNumber} created successfully`,
-      });
+      res.json(fixtures);
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      res.status(500).json({ error: error.message });
     }
-  }
+  };
 
-  // DELETE /api/fixtures/:gameweekNumber/:fixtureNumber - Takes gameweek number and fixture number
-  async deleteFixture(req, res) {
+  // Create fixture
+  createFixture = async (req, res) => {
     try {
-      const { gameweekNumber, fixtureNumber } = req.params;
+      const fixture = await this.fixtureService.createFixture(req.body);
+      res.status(201).json(fixture);
+    } catch (error) {
+      if (
+        error.message.includes("required") ||
+        error.message.includes("cannot be the same")
+      ) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
 
-      const result = await FixtureService.deleteFixtureFromGameWeek(
-        gameweekNumber,
-        fixtureNumber
+  // Update fixture
+  updateFixture = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const fixture = await this.fixtureService.updateFixture(id, req.body);
+      res.json(fixture);
+    } catch (error) {
+      if (error.message.includes("not found")) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
+
+  // Delete fixture
+  deleteFixture = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await this.fixtureService.deleteFixture(id);
+      res.json(result);
+    } catch (error) {
+      if (error.message.includes("not found")) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
+
+  // Create multiple fixtures
+  createMultipleFixtures = async (req, res) => {
+    try {
+      const fixtures = await this.fixtureService.createMultipleFixtures(
+        req.body
       );
-      res.status(200).json({
-        success: true,
-        message: result.message,
-      });
+      res.status(201).json(fixtures);
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      res.status(500).json({ error: error.message });
     }
-  }
-
-  // GET /api/fixtures - Get all fixtures (admin route)
-  async getAllFixtures(req, res) {
-    try {
-      const fixtures = await FixtureService.getAllFixtures();
-      res.status(200).json({
-        success: true,
-        data: fixtures,
-        message: "All fixtures fetched successfully",
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  // PUT /api/fixtures/:gameweekNumber/:fixtureNumber/result - Update fixture result
-  async updateFixtureResult(req, res) {
-    try {
-      const { gameweekNumber, fixtureNumber } = req.params;
-      const { home_points, away_points } = req.body;
-
-      const updatedFixture = await FixtureService.updateFixtureResult(
-        gameweekNumber,
-        fixtureNumber,
-        home_points,
-        away_points
-      );
-      res.status(200).json({
-        success: true,
-        data: updatedFixture,
-        message: "Fixture result updated successfully",
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
+  };
 }
-
-export default new FixtureController();
