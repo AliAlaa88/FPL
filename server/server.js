@@ -3,6 +3,7 @@ import cors from "cors";
 import fetch from "node-fetch";
 import sequelize from "./config/db.js";
 import apiRoutes from "./routes/index.js";
+import morgan from "morgan";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -10,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+app.use(morgan("dev"));
 // API Routes
 app.use("/api", apiRoutes);
 
