@@ -1,47 +1,24 @@
-import { Player, PlayerGameWeek, Team } from "../models/index.js";
+export class TeamService {
+  constructor(teamRepository) {
+    this.teamRepository = teamRepository;
+  }
 
-class TeamService {
   // Get all teams
   async getAllTeams() {
     try {
-      const teams = await Team.findAll({
-        order: [["name", "ASC"]],
-      });
+      const teams = await this.teamRepository.findAll();
       return teams;
     } catch (error) {
       throw new Error(`Error fetching teams: ${error.message}`);
     }
   }
+
   // GET Teams with Players Data
   async getTeamsWithPlayers(gameweekNumber) {
     try {
-      const teams = await Team.findAll({
-        include: [
-          {
-            model: Player,
-            as: "players",
-            include: [
-              {
-                model: PlayerGameWeek,
-                as: "gameweeks",
-                ...((gameweekNumber && {
-                  where: { gameweek_id: gameweekNumber },
-                }) ||
-                  {}),
-                attributes: [
-                  "gameweek_id",
-                  "player_id",
-                  "points",
-                  "total_points",
-                  "transfers",
-                  "transfers_cost",
-                ],
-              },
-            ],
-          },
-        ],
-        order: [["name", "ASC"]],
-      });
+      const teams = await this.teamRepository.findAllWithPlayers(
+        gameweekNumber
+      );
       return teams;
     } catch (error) {
       throw new Error(`Error fetching teams with players: ${error.message}`);
@@ -50,7 +27,7 @@ class TeamService {
   // Get team by ID
   async getTeamById(id) {
     try {
-      const team = await Team.findByPk(id);
+      const team = await this.teamRepository.findById(id);
       if (!team) {
         throw new Error("Team not found");
       }
@@ -63,9 +40,7 @@ class TeamService {
   // Get team by name
   async getTeamByName(name) {
     try {
-      const team = await Team.findOne({
-        where: { name },
-      });
+      const team = await this.teamRepository.findByName(name);
       if (!team) {
         throw new Error("Team not found");
       }
@@ -80,13 +55,18 @@ class TeamService {
     try {
       const { name } = teamData;
 
+      // Business logic validation
+      if (!name?.trim()) {
+        throw new Error("Team name is required");
+      }
+
       // Check if team already exists
-      const existingTeam = await Team.findOne({ where: { name } });
+      const existingTeam = await this.teamRepository.findByName(name);
       if (existingTeam) {
         throw new Error("Team already exists");
       }
 
-      const team = await Team.create({ name });
+      const team = await this.teamRepository.create({ name });
       return team;
     } catch (error) {
       throw new Error(`Error creating team: ${error.message}`);
@@ -96,12 +76,10 @@ class TeamService {
   // Update team
   async updateTeam(id, teamData) {
     try {
-      const team = await Team.findByPk(id);
-      if (!team) {
+      const updatedTeam = await this.teamRepository.update(id, teamData);
+      if (!updatedTeam) {
         throw new Error("Team not found");
       }
-
-      const updatedTeam = await team.update(teamData);
       return updatedTeam;
     } catch (error) {
       throw new Error(`Error updating team: ${error.message}`);
@@ -111,12 +89,10 @@ class TeamService {
   // Delete team
   async deleteTeam(id) {
     try {
-      const team = await Team.findByPk(id);
-      if (!team) {
+      const deleted = await this.teamRepository.delete(id);
+      if (!deleted) {
         throw new Error("Team not found");
       }
-
-      await team.destroy();
       return { message: "Team deleted successfully" };
     } catch (error) {
       throw new Error(`Error deleting team: ${error.message}`);
@@ -126,23 +102,10 @@ class TeamService {
   // Get team with fixtures (home and away)
   async getTeamWithFixtures(id) {
     try {
-      const team = await Team.findByPk(id, {
-        include: [
-          {
-            association: "homeFixtures",
-            include: [{ association: "awayTeam" }, { association: "gameweek" }],
-          },
-          {
-            association: "awayFixtures",
-            include: [{ association: "homeTeam" }, { association: "gameweek" }],
-          },
-        ],
-      });
-
+      const team = await this.teamRepository.findByIdWithFixtures(id);
       if (!team) {
         throw new Error("Team not found");
       }
-
       return team;
     } catch (error) {
       throw new Error(`Error fetching team with fixtures: ${error.message}`);
@@ -152,10 +115,7 @@ class TeamService {
   // Create multiple teams
   async createMultipleTeams(teamsData) {
     try {
-      const teams = await Team.bulkCreate(teamsData, {
-        validate: true,
-        ignoreDuplicates: true,
-      });
+      const teams = await this.teamRepository.bulkCreate(teamsData);
       return teams;
     } catch (error) {
       throw new Error(`Error creating teams: ${error.message}`);
@@ -163,11 +123,10 @@ class TeamService {
   }
 
   async getAllTeamsWithPlayers() {
-    const teams = Team.findAll({
-      include: [{ association: "players" }],
-    });
-    return teams;
+    try {
+      return await this.teamRepository.findAllWithPlayers();
+    } catch (error) {
+      throw new Error(`Error fetching teams with players: ${error.message}`);
+    }
   }
 }
-
-export default new TeamService();
