@@ -161,6 +161,13 @@ class TeamService {
       throw new Error(`Error creating teams: ${error.message}`);
     }
   }
+
+  async getAllTeamsWithPlayers() {
+    const teams = Team.findAll({
+      include: [{ association: "players" }],
+    });
+    return teams;
+  }
 }
 
 export default new TeamService();
