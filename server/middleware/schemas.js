@@ -140,6 +140,39 @@ export const teamSchemas = {
       }),
     }),
   },
+
+  // PUT /api/teams/:id/gameweek - Update team's gameweek info (captain/chip)
+  updateGameweekData: {
+    params: Joi.object({
+      id: Joi.number().integer().positive().required().messages({
+        "number.base": "Team ID must be a number",
+        "number.integer": "Team ID must be an integer",
+        "number.positive": "Team ID must be positive",
+        "any.required": "Team ID is required",
+      }),
+    }),
+    body: Joi.object({
+      gameweek: Joi.number().integer().min(1).required().messages({
+        "number.base": "Gameweek must be a number",
+        "number.integer": "Gameweek must be an integer",
+        "number.min": "Gameweek must be at least 1",
+        "any.required": "Gameweek is required",
+      }),
+      captianId: Joi.number().integer().positive().optional().messages({
+        "number.base": "Captain ID must be a number",
+        "number.integer": "Captain ID must be an integer",
+        "number.positive": "Captain ID must be positive",
+      }),
+      chip: Joi.string().trim().optional().messages({
+        "string.base": "Chip must be a string",
+      }),
+    })
+      .or("captianId", "chip")
+      .messages({
+        "object.missing":
+          "At least one of 'captianId' or 'chip' must be provided",
+      }),
+  },
 };
 
 // GameWeek validation schemas

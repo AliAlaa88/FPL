@@ -72,6 +72,22 @@ export class TeamService {
       throw new Error(`Error creating team: ${error.message}`);
     }
   }
+  async updateTeamGameweekData(id, gameweekData, captianId, chip) {
+    try {
+      const updatedTeam = await this.teamRepository.updateGameweekData(
+        id,
+        gameweekData,
+        captianId,
+        chip
+      );
+      if (!updatedTeam) {
+        throw new Error("Team not found");
+      }
+      return updatedTeam;
+    } catch (error) {
+      throw new Error(`Error updating team gameweek data: ${error.message}`);
+    }
+  }
 
   // Update team
   async updateTeam(id, teamData) {

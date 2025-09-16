@@ -15,10 +15,23 @@ router.get("/with-players", teamController.getTeamsWithPlayers);
 router.post("/bulk", teamController.createMultipleTeams);
 
 // GET /api/teams/:id - Get team by ID
-router.get("/:id", teamController.getTeamById);
+router
+  .get("/:id", teamController.getTeamById)
+  .post(
+    "/:id",
+    validate(teamSchemas.updateGameweekData),
+    teamController.updateTeamGameweekData
+  );
 
 // GET /api/teams/:id/fixtures - Get team with fixtures
 router.get("/:id/fixtures", teamController.getTeamWithFixtures);
+
+// PUT /api/teams/:id/gameweek - Update team's gameweek info (captain/chip)
+router.put(
+  "/:id/gameweek",
+  validate(teamSchemas.updateGameweekData),
+  teamController.updateTeamGameweekData
+);
 
 // POST /api/teams - Create a team
 router.post("/", validate(teamSchemas.createTeam), teamController.createTeam);
