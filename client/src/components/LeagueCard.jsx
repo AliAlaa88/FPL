@@ -11,7 +11,9 @@ function LeagueCard({ team, currentGameWeek }) {
   // team.captain_id=team.players[0]?.entry_id;
   // team.captain_id=0;
 
-  const [selected, setSelected] = useState(team.captain_id || null);
+  // const [selected, setSelected] = useState(team.captaincies[0].player_id || null);
+  const [selected, setSelected] = useState(team.player_id || null);
+  // const [selectedChip, setSelectedChip] = useState(team.chips[0] || "NONE");
   const [selectedChip, setSelectedChip] = useState(team.chip || "NONE");
   const [totalPoints, setTotalPoints] = useState(0);
   const { setTeamTotalPoints } = useLeagues();
@@ -148,11 +150,7 @@ function LeagueCard({ team, currentGameWeek }) {
               onClick={() => handleChipSelection("TRIPLECAPTAIN")}
               disabled={!!team.chip}
             >
-              <img
-                src={tripleCaptainIcon}
-                alt="Triple Captain Chip"
-                width={50}
-              />
+              <img src={tripleCaptainIcon} alt="Triple Captain Chip" />
             </button>
             <button
               className={
@@ -161,14 +159,14 @@ function LeagueCard({ team, currentGameWeek }) {
               onClick={() => handleChipSelection("AUTOCAPTAIN")}
               disabled={!!team.captain_id}
             >
-              <img src={autoCaptainIcon} alt="Auto Captain Chip" width={50} />
+              <img src={autoCaptainIcon} alt="Auto Captain Chip" />
             </button>
             <button
               className={selectedChip === "FREEHIT" ? "chip active" : "chip"}
               onClick={() => handleChipSelection("FREEHIT")}
               disabled={!!team.captain_id}
             >
-              <img src={freeHitIcon} alt="Free Hit Chip" width={50} />
+              <img src={freeHitIcon} alt="Free Hit Chip" />
             </button>
             <button onClick={handleSubmit}>Submit</button>
           </div>

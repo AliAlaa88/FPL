@@ -8,6 +8,7 @@ import "./App.css";
 const App = () => {
   const [currentGameWeek, setCurrentGameWeek] = useState(1);
   const [maxGameWeek, setMaxGameWeek] = useState(1);
+  const [activeTab, setActiveTab] = useState('leagues');
 
   const handlePreviousGW = () => {
     setCurrentGameWeek(prev => Math.max(1, prev - 1));
@@ -39,19 +40,49 @@ const App = () => {
       });
   }, []);
 
+  const renderTabContent = () => {
+    switch(activeTab) {
+      case 'leagues':
+        return <LeagueList currentGameWeek={currentGameWeek} />;
+      case 'fixtures':
+        return <FixtureList currentGameWeek={currentGameWeek} />;
+      case 'standings':
+        return <Standing currentGameWeek={currentGameWeek} />;
+      default:
+        return <LeagueList currentGameWeek={currentGameWeek} />;
+    }
+  };
+
   return (
     <>
-      {/* <h1>Football Land</h1> */}
       <GameWeek 
         currentGW={currentGameWeek}
         onPrevious={handlePreviousGW}
         onNext={handleNextGW}
         maxGW={maxGameWeek}
       />
+      <div className="tabs">
+        <button 
+          className={`tab ${activeTab === 'leagues' ? 'active' : ''}`}
+          onClick={() => setActiveTab('leagues')}
+        >
+          Leagues
+        </button>
+        <button 
+          className={`tab ${activeTab === 'fixtures' ? 'active' : ''}`}
+          onClick={() => setActiveTab('fixtures')}
+        >
+          Fixtures
+        </button>
+        <button 
+          className={`tab ${activeTab === 'standings' ? 'active' : ''}`}
+          onClick={() => setActiveTab('standings')}
+        >
+          Standings
+        </button>
+      </div>
       <div className="app">
-          <LeagueList currentGameWeek={currentGameWeek} />
-          <FixtureList currentGameWeek={currentGameWeek} />
-          {/* <Standing currentGameWeek={currentGameWeek} /> */}
+        {renderTabContent()}
       </div>
     </>
   );
