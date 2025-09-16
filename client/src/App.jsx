@@ -50,7 +50,7 @@ const App = () => {
       />
       <div className="app">
           <LeagueList currentGameWeek={currentGameWeek} />
-          {/* <FixtureList currentGameWeek={currentGameWeek} /> */}
+          <FixtureList currentGameWeek={currentGameWeek} />
           {/* <Standing currentGameWeek={currentGameWeek} /> */}
       </div>
     </>

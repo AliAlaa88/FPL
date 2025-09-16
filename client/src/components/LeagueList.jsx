@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import LeagueCard from "./LeagueCard";
+import { useLeagues } from "../context/leaguesContext";
 import "./LeagueList.css";
 
 function LeagueList({ currentGameWeek }) {
   const [teams, setTeams] = useState([]);
+  const { setLeagueNames } = useLeagues();
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -16,6 +18,16 @@ function LeagueList({ currentGameWeek }) {
         }
         const teamsData = await response.json();
         setTeams(teamsData || []);
+        setLeagueNames((prev) => {
+          const updated = { ...prev };
+          teamsData.forEach((team) => {
+            if (team.id && team.name) {
+              updated[team.id] = team.name;
+            }
+          });
+          return updated;
+        });
+
         console.log("Fetched teams:", teamsData);
       } catch (err) {
         console.error("Error fetching teams:", err);

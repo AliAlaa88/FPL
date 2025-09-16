@@ -5,23 +5,32 @@ import "./LeagueCard.css";
 import tripleIcon from "/triple-captain-chip.webp";
 
 function LeagueCard({ team }) {
+  // team.chip="triplecaptain";
+  // team.captain_id=team.players[0]?.entry_id;
   const [selected, setSelected] = useState(team.captain_id || null);
-  const [selectedChip, setSelectedChip] = useState(team.chip || "triplecaptain");
+  const [selectedChip, setSelectedChip] = useState(team.chip || null);
   const [totalPoints, setTotalPoints] = useState(0);
+  const { setTeamTotalPoints } = useLeagues();
 
   useEffect(() => {
     const initialTotal = team.players.reduce(
       (sum, p) =>
         sum +
-        p.gameweeks[0].points *
+        (p.gameweeks[0].points - p.gameweeks[0].transfers_cost) *
           (1 + +(selected === p.entry_id) * (1 + +(selectedChip === "triplecaptain"))),
       0
     );
     setTotalPoints(initialTotal);
-  }, [team.players, selected, selectedChip]);
+    
+    // Store total points in context with team ID
+    setTeamTotalPoints(prev => ({
+      ...prev,
+      [team.id]: initialTotal
+    }));
+  }, [team.players, selected, selectedChip, team.id, setTeamTotalPoints]);
 
   const handleSelectPlayer = (playerId) => {
-    if (team.captain_id) return; // Prevent changing captain if fetched from api -> submitted already
+    if (team.captain_id) return; // Prevent changing captain if already submitted
 
     const newSelected = selected === playerId ? null : playerId;
     setSelected(newSelected);
@@ -34,22 +43,35 @@ function LeagueCard({ team }) {
       0
     );
     setTotalPoints(newTotal);
+    
+    // Update total points in context
+    setTeamTotalPoints(prev => ({
+      ...prev,
+      [team.id]: newTotal
+    }));
   };
 
   const handleChipSelection = (chip) => {
-    if (team.captain_id) return; // Prevent changing chip if already submitted
+    if (team.chip) return; // Prevent changing chip if already submitted
     
-    setSelectedChip(chip);
+    const newChip = selectedChip === chip ? null : chip;
+    setSelectedChip(newChip);
     
     // Recalculate total points with new chip
     const newTotal = team.players.reduce(
       (sum, p) =>
         sum +
         p.gameweeks[0].points *
-          (1 + +(selected === p.entry_id) * (1 + +(chip === "triplecaptain"))),
+          (1 + +(selected === p.entry_id) * (1 + +(newChip === "triplecaptain"))),
       0
     );
     setTotalPoints(newTotal);
+    
+    // Update total points in context
+    setTeamTotalPoints(prev => ({
+      ...prev,
+      [team.id]: newTotal
+    }));
   };
 
   return (
@@ -60,7 +82,7 @@ function LeagueCard({ team }) {
             <button 
               className={selectedChip === "triplecaptain" ? "chip active" : "chip"}
               onClick={() => handleChipSelection("triplecaptain")}
-              disabled={!!team.captain_id}
+              disabled={!!team.chip}
             >
               <img src={tripleIcon} alt="Triple Captain Chip" width={50}/>
             </button>

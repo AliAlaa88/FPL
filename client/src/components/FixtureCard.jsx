@@ -1,14 +1,20 @@
-import React from "react";
 import "./FixtureCard.css";
+import { useLeagues } from "../context/leaguesContext";
 
-function FixtureCard({ homeTeam, awayTeam, homePoints, awayPoints, gameweek }) {
+function FixtureCard({ homeTeam, awayTeam, homeTeamId, awayTeamId, homePoints, awayPoints, gameweek }) {
+  const { teamTotalPoints } = useLeagues();
+  
+  // Use context points if available, otherwise fallback to API points or 0
+  const homeTeamPoints = teamTotalPoints[homeTeamId] || homePoints || 0;
+  const awayTeamPoints = teamTotalPoints[awayTeamId] || awayPoints || 0;
+  
   let winner = null;
   let result = "";
-
-  if (homePoints > awayPoints) {
+  
+  if (homeTeamPoints > awayTeamPoints) {
     winner = homeTeam;
     result = "W";
-  } else if (awayPoints > homePoints) {
+  } else if (awayTeamPoints > homeTeamPoints) {
     winner = awayTeam;
     result = "W";
   } else {
@@ -22,7 +28,7 @@ function FixtureCard({ homeTeam, awayTeam, homePoints, awayPoints, gameweek }) {
         <span>Gameweek {gameweek}</span>
       </div>
       <h3>
-        {homeTeam} <b>({homePoints})</b> vs {awayTeam} <b>({awayPoints})</b>
+        {homeTeam} <b>({homeTeamPoints})</b> vs {awayTeam} <b>({awayTeamPoints})</b>
       </h3>
       <div className="result">
         Winner: <b>{winner}</b>
