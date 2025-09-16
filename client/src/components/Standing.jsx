@@ -1,40 +1,56 @@
-import { useLeagues } from "../context/leaguesContext";
+import React, { useEffect, useState } from "react";
+import "./Standing.css";
 
 const Standing = () => {
-  const { leagues, leaguePoints } = useLeagues();
+  const [standings, setStandings] = useState([]);
+
+  useEffect(() => {
+    const fetchStandings = async () => {
+      try {
+        const response = await fetch('/api/standings/');
+        if (!response.ok) {
+          throw new Error('Failed to fetch standings');
+        }
+        const standingsData = await response.json();
+        setStandings(standingsData || []);
+        console.log("Fetched standings:", standingsData);
+      } catch (err) {
+        console.error('Error fetching standings:', err);
+      }
+    };
+
+    fetchStandings();
+  }, []);
+
   return (
-    <>
-      <div className="container">
-        <h2>Standings</h2>
-        {leagues
-          .sort((a, b) => {
-            const aLeague = leaguePoints[a.name] || {};
-            const bLeague = leaguePoints[b.name] || {};
-
-            const aLive = aLeague.liveLeaguePoints || 0;
-            const bLive = bLeague.liveLeaguePoints || 0;
-
-            if (aLive !== bLive) {
-              return bLive - aLive; // primary sort
-            }
-
-            const aTotal = aLeague.liveTotalPoints || 0;
-            const bTotal = bLeague.liveTotalPoints || 0;
-
-            return bTotal - aTotal; // secondary sort
-          })
-          .map((league) => (
-            <div key={league.id}>
-              <div>{league.name}</div>
-              <div>
-                {leaguePoints[league.name]?.liveLeaguePoints || 0} pts -{" "}
-                {leaguePoints[league.name]?.liveTotalPoints || 0} score
+    <div className="container">
+      <h2>League Standings</h2>
+      <div className="standings-table">
+        <div className="standings-header">
+          <div className="position">Pos</div>
+          <div className="team-name">Team</div>
+          <div className="points">Pts</div>
+          <div className="goals">GF</div>
+          <div className="goals">GA</div>
+          <div className="goals">GD</div>
+        </div>
+        {standings.map((team, index) => {
+          const goalDifference = parseInt(team.goals_for) - parseInt(team.goals_against);
+          return (
+            <div key={team.team_id} className="standings-row">
+              <div className="position">{index + 1}</div>
+              <div className="team-name">{team.name}</div>
+              <div className="points">{team.league_points}</div>
+              <div className="goals">{team.goals_for}</div>
+              <div className="goals">{team.goals_against}</div>
+              <div className={`goals ${goalDifference >= 0 ? 'positive' : 'negative'}`}>
+                {goalDifference > 0 ? '+' : ''}{goalDifference}
               </div>
-              <br />
             </div>
-          ))}
+          );
+        })}
       </div>
-    </>
+    </div>
   );
 };
 

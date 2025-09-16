@@ -49,9 +49,9 @@ const App = () => {
         maxGW={maxGameWeek}
       />
       <div className="app">
-          <LeagueList currentGameWeek={currentGameWeek} />
-          <FixtureList currentGameWeek={currentGameWeek} />
-          {/* <Standing currentGameWeek={currentGameWeek} /> */}
+          {/* <LeagueList currentGameWeek={currentGameWeek} /> */}
+          {/* <FixtureList currentGameWeek={currentGameWeek} /> */}
+          <Standing currentGameWeek={currentGameWeek} />
       </div>
     </>
   );
