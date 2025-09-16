@@ -4,7 +4,8 @@ import "./FixtureList.css";
 import FixtureCard from "./FixtureCard";
 
 function FixtureList({ currentGameWeek }) {
-  const { leagueNames, setLeagueNames, teamTotalPoints, setTeamTotalPoints } = useLeagues();
+  const { leagueNames, setLeagueNames, teamTotalPoints, setTeamTotalPoints } =
+    useLeagues();
   const [fixtures, setFixtures] = useState([]);
   const [league1, setLeague1] = useState("");
   const [league2, setLeague2] = useState("");
@@ -62,9 +63,9 @@ function FixtureList({ currentGameWeek }) {
         away_team_id: league2,
         home_points: teamTotalPoints[league1] || 0,
         away_points: teamTotalPoints[league2] || 0,
-        gameweek: { week_number: currentGameWeek }
+        gameweek: { week_number: currentGameWeek },
       };
-      
+
       setFixtures([...fixtures, newFixture]);
       setLeague1("");
       setLeague2("");
@@ -72,17 +73,17 @@ function FixtureList({ currentGameWeek }) {
   };
 
   const handleSubmitFixtures = async () => {
-    const newFixtures = fixtures.filter(f => !f.id || f.id > 1000000); // Only submit new fixtures (with temporary IDs)
+    const newFixtures = fixtures.filter((f) => !f.id || f.id > 1000000); // Only submit new fixtures (with temporary IDs)
     if (newFixtures.length === 0) return;
 
     setIsSubmitting(true);
     try {
-      const fixturesToSubmit = newFixtures.map(fixture => ({
+      const fixturesToSubmit = newFixtures.map((fixture) => ({
         gameweek_id: currentGameWeek,
         home_team_id: fixture.home_team_id,
         away_team_id: fixture.away_team_id,
         home_points: teamTotalPoints[fixture.home_team_id] || 0,
-        away_points: teamTotalPoints[fixture.away_team_id] || 0
+        away_points: teamTotalPoints[fixture.away_team_id] || 0,
       }));
 
       const response = await fetch("/api/fixtures/bulk", {
@@ -99,9 +100,11 @@ function FixtureList({ currentGameWeek }) {
 
       const result = await response.json();
       console.log("Fixtures submitted successfully:", result);
-      
+
       // Refresh fixtures from API
-      const fetchResponse = await fetch(`/api/fixtures/gameweek/${currentGameWeek}`);
+      const fetchResponse = await fetch(
+        `/api/fixtures/gameweek/${currentGameWeek}`
+      );
       if (fetchResponse.ok) {
         const fixturesData = await fetchResponse.json();
         setFixtures(fixturesData || []);
@@ -121,10 +124,17 @@ function FixtureList({ currentGameWeek }) {
         <h2>Fixtures</h2>
         <button
           onClick={handleSubmitFixtures}
-          disabled={isSubmitting || fixtures.filter(f => !f.id || f.id > 1000000).length === 0}
+          disabled={
+            isSubmitting ||
+            fixtures.filter((f) => !f.id || f.id > 1000000).length === 0
+          }
           className="submit-fixtures-btn"
         >
-          {isSubmitting ? "Submitting..." : `Submit ${fixtures.filter(f => !f.id || f.id > 1000000).length} New Fixtures`}
+          {isSubmitting
+            ? "Submitting..."
+            : `Submit ${
+                fixtures.filter((f) => !f.id || f.id > 1000000).length
+              } New Fixtures`}
         </button>
         <div className="fixtures-controls">
           <select value={league1} onChange={(e) => setLeague1(e.target.value)}>

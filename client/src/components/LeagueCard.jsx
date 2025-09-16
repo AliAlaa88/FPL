@@ -6,13 +6,13 @@ import tripleCaptainIcon from "/triple-captain-chip.webp";
 import autoCaptainIcon from "/auto-captain-chip.webp";
 import freeHitIcon from "/free-hit-chip.webp";
 
-function LeagueCard({ team }) {
-  // team.chip="triplecaptain";
+function LeagueCard({ team, currentGameWeek }) {
+  // team.chip="AUTOCAPTAIN";
   // team.captain_id=team.players[0]?.entry_id;
   // team.captain_id=0;
 
   const [selected, setSelected] = useState(team.captain_id || null);
-  const [selectedChip, setSelectedChip] = useState(team.chip || "None");
+  const [selectedChip, setSelectedChip] = useState(team.chip || "NONE");
   const [totalPoints, setTotalPoints] = useState(0);
   const { setTeamTotalPoints } = useLeagues();
 
@@ -21,35 +21,37 @@ function LeagueCard({ team }) {
       (sum, p) =>
         sum +
         (p.gameweeks[0].points -
-          +(team.chip !== "freehit") * p.gameweeks[0].transfers_cost) *
+          +(team.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
           (1 +
             +(selected === p.entry_id) *
-              (1 + +(selectedChip === "triplecaptain"))),
+              (1 + +(selectedChip === "TRIPLECAPTAIN"))),
       0
     );
     setTotalPoints(initialTotal);
     if (team.captain_id === 0) {
-      if (team.chip === "autocaptain") {
-        const maxPlayer = team.players.reduce((max, p) => {
-          const currentPoints =
-            p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
-          const maxPoints =
-            max.gameweeks[0].points - max.gameweeks[0].transfers_cost;
-          return currentPoints > maxPoints ? p : max;
-        });
-        setSelected(maxPlayer.entry_id);
+      if (team.chip === "AUTOCAPTAIN") {
+        if (team.players.length > 0) {
+          const maxPlayer = team.players.reduce((max, p) => {
+            const currentPoints =
+              p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
+            const maxPoints =
+              max.gameweeks[0].points - max.gameweeks[0].transfers_cost;
+            return currentPoints > maxPoints ? p : max;
+          });
+          setSelected(maxPlayer.entry_id);
+        }
       } else {
-        const minPlayer = team.players.reduce((min, p) => {
-          const currentPoints =
-            p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
-          const minPoints =
-            min.gameweeks[0].points - min.gameweeks[0].transfers_cost;
-          return currentPoints < minPoints ? p : min;
-        });
-        setSelected(minPlayer.entry_id);
+        if (team.players.length > 0) {
+          const minPlayer = team.players.reduce((min, p) => {
+            const currentPoints =
+              p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
+            const minPoints =
+              min.gameweeks[0].points - min.gameweeks[0].transfers_cost;
+            return currentPoints < minPoints ? p : min;
+          });
+          setSelected(minPlayer.entry_id);
+        }
       }
-    } else {
-      setSelected(team.captain_id);
     }
 
     // Store total points in context with team ID
@@ -69,10 +71,10 @@ function LeagueCard({ team }) {
       (sum, p) =>
         sum +
         (p.gameweeks[0].points -
-          +(team.chip !== "freehit") * p.gameweeks[0].transfers_cost) *
+          +(team.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
           (1 +
             +(newSelected === p.entry_id) *
-              (1 + +(selectedChip === "triplecaptain"))),
+              (1 + +(selectedChip === "TRIPLECAPTAIN"))),
       0
     );
     setTotalPoints(newTotal);
@@ -87,7 +89,7 @@ function LeagueCard({ team }) {
   const handleChipSelection = (chip) => {
     if (team.chip) return; // Prevent changing chip if already submitted
 
-    const newChip = selectedChip === chip ? null : chip;
+    const newChip = selectedChip === chip ? "NONE" : chip;
     setSelectedChip(newChip);
 
     // Recalculate total points with new chip
@@ -95,9 +97,9 @@ function LeagueCard({ team }) {
       (sum, p) =>
         sum +
         (p.gameweeks[0].points -
-          +(team.chip !== "freehit") * p.gameweeks[0].transfers_cost) *
+          +(team.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
           (1 +
-            +(selected === p.entry_id) * (1 + +(newChip === "triplecaptain"))),
+            +(selected === p.entry_id) * (1 + +(newChip === "TRIPLECAPTAIN"))),
       0
     );
     setTotalPoints(newTotal);
@@ -109,6 +111,31 @@ function LeagueCard({ team }) {
     }));
   };
 
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(`/api/teams/${team.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gameweek: currentGameWeek,
+          captainId: selected,
+          chip: selectedChip,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit team selection");
+      }
+
+      const result = await response.json();
+      console.log("Team selection submitted successfully:", result);
+    } catch (error) {
+      console.error("Error submitting team selection:", error);
+    }
+  };
+
   return (
     <div className="league-card small">
       {team && (
@@ -116,9 +143,9 @@ function LeagueCard({ team }) {
           <div className="league-header">
             <button
               className={
-                selectedChip === "triplecaptain" ? "chip active" : "chip"
+                selectedChip === "TRIPLECAPTAIN" ? "chip active" : "chip"
               }
-              onClick={() => handleChipSelection("triplecaptain")}
+              onClick={() => handleChipSelection("TRIPLECAPTAIN")}
               disabled={!!team.chip}
             >
               <img
@@ -129,21 +156,21 @@ function LeagueCard({ team }) {
             </button>
             <button
               className={
-                selectedChip === "autocaptain" ? "chip active" : "chip"
+                selectedChip === "AUTOCAPTAIN" ? "chip active" : "chip"
               }
-              onClick={() => handleChipSelection("autocaptain")}
+              onClick={() => handleChipSelection("AUTOCAPTAIN")}
               disabled={!!team.captain_id}
             >
               <img src={autoCaptainIcon} alt="Auto Captain Chip" width={50} />
             </button>
             <button
-              className={selectedChip === "freehit" ? "chip active" : "chip"}
-              onClick={() => handleChipSelection("freehit")}
+              className={selectedChip === "FREEHIT" ? "chip active" : "chip"}
+              onClick={() => handleChipSelection("FREEHIT")}
               disabled={!!team.captain_id}
             >
               <img src={freeHitIcon} alt="Free Hit Chip" width={50} />
             </button>
-            <button>Submit</button>
+            <button onClick={handleSubmit}>Submit</button>
           </div>
           <div className="league-info small">
             <span>
@@ -169,7 +196,7 @@ function LeagueCard({ team }) {
                 factor={
                   1 +
                   +(selected === player.entry_id) *
-                    (1 + +(selectedChip === "triplecaptain"))
+                    (1 + +(selectedChip === "TRIPLECAPTAIN"))
                 }
               />
             ))}
