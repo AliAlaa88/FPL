@@ -2,11 +2,11 @@ import { useState , useEffect } from "react";
 import { useLeagues } from "../context/leaguesContext";
 import PlayerCard from "./PlayerCard";
 import "./LeagueCard.css";
+import tripleIcon from "/triple-captain-chip.webp";
 
 function LeagueCard({ team }) {
-  team.chip = "triple"; // Default chip if not provided
-  // const { leagues, setLeagues, leaguePoints, setLeaguePoints } = useLeagues(); // for live updating points in fixtures, standings
   const [selected, setSelected] = useState(team.captain_id || null);
+  const [selectedChip, setSelectedChip] = useState(team.chip || "triplecaptain");
   const [totalPoints, setTotalPoints] = useState(0);
 
   useEffect(() => {
@@ -14,11 +14,11 @@ function LeagueCard({ team }) {
       (sum, p) =>
         sum +
         p.gameweeks[0].points *
-          (1 + +(selected === p.entry_id) * (1 + +(team.chip === "triple"))),
+          (1 + +(selected === p.entry_id) * (1 + +(selectedChip === "triplecaptain"))),
       0
     );
     setTotalPoints(initialTotal);
-  }, [team.players, selected, team.chip]);
+  }, [team.players, selected, selectedChip]);
 
   const handleSelectPlayer = (playerId) => {
     if (team.captain_id) return; // Prevent changing captain if fetched from api -> submitted already
@@ -30,25 +30,57 @@ function LeagueCard({ team }) {
       (sum, p) =>
         sum +
         p.gameweeks[0].points *
-          (1 + +(newSelected === p.entry_id) * (1 + +(team.chip === "triple"))),
+          (1 + +(newSelected === p.entry_id) * (1 + +(selectedChip === "triplecaptain"))),
       0
     );
     setTotalPoints(newTotal);
+  };
 
-    // setLeagues((prevLeagues) => {
-    //   return prevLeagues.map((l) =>
-    //     l.id === data.league.id ? { ...l, totalPoints: newTotal } : l
-    //   );
-    // });
+  const handleChipSelection = (chip) => {
+    if (team.captain_id) return; // Prevent changing chip if already submitted
+    
+    setSelectedChip(chip);
+    
+    // Recalculate total points with new chip
+    const newTotal = team.players.reduce(
+      (sum, p) =>
+        sum +
+        p.gameweeks[0].points *
+          (1 + +(selected === p.entry_id) * (1 + +(chip === "triplecaptain"))),
+      0
+    );
+    setTotalPoints(newTotal);
   };
 
   return (
     <div className="league-card small">
       {team && (
         <>
-          <div>
-            <h3 className="league-name">Chips Buttons & Submit Button</h3>
-            <p>for admins only</p>
+          <div className="league-header">
+            <button 
+              className={selectedChip === "triplecaptain" ? "chip active" : "chip"}
+              onClick={() => handleChipSelection("triplecaptain")}
+              disabled={!!team.captain_id}
+            >
+              <img src={tripleIcon} alt="Triple Captain Chip" width={50}/>
+            </button>
+            <button 
+              className={selectedChip === "autocaptain" ? "chip active" : "chip"}
+              onClick={() => handleChipSelection("autocaptain")}
+              disabled={!!team.captain_id}
+            >
+              <img src={tripleIcon} alt="Auto Captain Chip" width={50}/>
+            </button>
+            <button 
+              className={selectedChip === "freehit" ? "chip active" : "chip"}
+              onClick={() => handleChipSelection("freehit")}
+              disabled={!!team.captain_id}
+            >
+              <img src={tripleIcon} alt="Free Hit Chip" width={50}/>
+            </button>
+            <button>
+              Submit
+            </button>
           </div>
           <div className="league-info small">
             <span>
@@ -61,7 +93,7 @@ function LeagueCard({ team }) {
               GW Points: <b>{totalPoints}</b>
             </span>
             <span>
-              Chip: <b>{team.chip[0]}</b> {/* replace by chip icon */}
+              Chip: <b>{selectedChip}</b>
             </span>
           </div>
           <div className="players-vertical">
@@ -73,7 +105,7 @@ function LeagueCard({ team }) {
                 onSelect={() => handleSelectPlayer(player.entry_id)}
                 factor={
                   1 +
-                  +(selected === player.entry_id) * (1 + +(team.chip === "triple"))
+                  +(selected === player.entry_id) * (1 + +(selectedChip === "triplecaptain"))
                 }
               />
             ))}

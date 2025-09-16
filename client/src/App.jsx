@@ -41,7 +41,7 @@ const App = () => {
 
   return (
     <>
-      <h1>Football Land</h1>
+      {/* <h1>Football Land</h1> */}
       <GameWeek 
         currentGW={currentGameWeek}
         onPrevious={handlePreviousGW}
@@ -49,9 +49,9 @@ const App = () => {
         maxGW={maxGameWeek}
       />
       <div className="app">
-          {/* <LeagueList currentGameWeek={currentGameWeek} /> */}
+          <LeagueList currentGameWeek={currentGameWeek} />
           {/* <FixtureList currentGameWeek={currentGameWeek} /> */}
-          <Standing currentGameWeek={currentGameWeek} />
+          {/* <Standing currentGameWeek={currentGameWeek} /> */}
       </div>
     </>
   );

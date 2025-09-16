@@ -37,74 +37,35 @@
     inset 0 1px 0 rgba(100, 116, 139, 0.3);
 }
 
-.form-inline {
+.league-header {
   display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
   align-items: center;
-  width: 100%;
   justify-content: center;
+  gap: 3rem;
   margin-bottom: 1rem;
 }
 
-.form-inline input {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.9rem;
-  border: 1px solid rgba(100, 116, 139, 0.4);
-  border-radius: 10px;
-  background: rgba(30, 41, 59, 0.9);
-  color: #f1f5f9;
-  outline: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  min-width: 100px;
-  max-width: 140px;
-  font-weight: 500;
-}
-
-.form-inline input:focus {
-  border-color: #646cff;
-  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.4);
-  background: rgba(15, 23, 42, 0.95);
-}
-
-.form-inline input::placeholder {
-  color: #64748b;
-  font-weight: 400;
-}
-
-.tick-btn {
-  background: linear-gradient(135deg, #646cff 0%, #3b82f6 100%);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  width: 36px;
-  height: 36px;
-  font-size: 1rem;
+.league-header .chip {
+  border-radius: 50%;
+  height: 60px;
+  width: 60px;
+  padding: 5px;
+  background: rgba(100, 116, 139, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3);
-  font-weight: 600;
-  padding: 0;
+  transition: all 0.3s ease;
 }
 
-.tick-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(100, 108, 255, 0.4);
+.league-header img {
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  object-fit: contain;
 }
 
-.tick-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.tick-btn:disabled {
-  background: linear-gradient(135deg, #475569 0%, #334155 100%);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+.league-header .active img {
+  border: #ff0000 5px solid;
 }
 
 .league-info.small {

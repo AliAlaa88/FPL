@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Standing.css";
 
-const Standing = () => {
+const Standing = ({ currentGameWeek }) => {
   const [standings, setStandings] = useState([]);
 
   useEffect(() => {
     const fetchStandings = async () => {
       try {
-        const response = await fetch('/api/standings/');
+        const response = await fetch(`/api/standings?gameweek=${currentGameWeek}`);
         if (!response.ok) {
           throw new Error('Failed to fetch standings');
         }
@@ -20,7 +20,7 @@ const Standing = () => {
     };
 
     fetchStandings();
-  }, []);
+  }, [currentGameWeek]);
 
   return (
     <div className="container">
