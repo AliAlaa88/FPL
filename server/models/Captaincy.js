@@ -7,10 +7,15 @@ const Captaincy = sequelize.define(
     player_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: "players",
+        key: "entry_id",
+      },
     },
     team_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: "teams",
         key: "id",
@@ -19,6 +24,7 @@ const Captaincy = sequelize.define(
     gameweek_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: "gameweeks",
         key: "id",
@@ -28,6 +34,7 @@ const Captaincy = sequelize.define(
   {
     tableName: "captaincy",
     timestamps: false,
+    id: false,
     indexes: [
       {
         unique: true,

@@ -1,4 +1,11 @@
-import { Team, Player, PlayerGameWeek } from "../../models/index.js";
+import {
+  Team,
+  Player,
+  PlayerGameWeek,
+  sequelize,
+  Captaincy,
+  Chip,
+} from "../../models/index.js";
 import { ITeamRepository } from "../interfaces/ITeamRepository.js";
 
 export class TeamRepository extends ITeamRepository {
@@ -40,7 +47,21 @@ export class TeamRepository extends ITeamRepository {
     };
 
     return await Team.findAll({
-      include: [include],
+      include: [
+        {
+          model: Captaincy,
+          as: "captaincies",
+          required: false, // LEFT JOIN - include teams even without captaincy
+          ...(gameweekNumber && { where: { gameweek_id: gameweekNumber } }),
+        },
+        {
+          model: Chip,
+          as: "chips",
+          required: false, // LEFT JOIN - include teams even without chips
+          ...(gameweekNumber && { where: { gameweek_id: gameweekNumber } }),
+        },
+        include,
+      ],
       order: [["name", "ASC"]],
     });
   }

@@ -7,6 +7,7 @@ const Chip = sequelize.define(
     team_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: "teams",
         key: "id",
@@ -15,6 +16,7 @@ const Chip = sequelize.define(
     gameweek_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: "gameweeks",
         key: "id",
@@ -28,6 +30,7 @@ const Chip = sequelize.define(
   {
     tableName: "chips",
     timestamps: false,
+    id: false,
     indexes: [
       {
         unique: true,
