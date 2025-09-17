@@ -158,11 +158,16 @@ export const teamSchemas = {
         "number.min": "Gameweek must be at least 1",
         "any.required": "Gameweek is required",
       }),
-      captianId: Joi.number().integer().positive().optional().messages({
-        "number.base": "Captain ID must be a number",
-        "number.integer": "Captain ID must be an integer",
-        "number.positive": "Captain ID must be positive",
-      }),
+      captianId: Joi.number()
+        .integer()
+        .positive()
+        .optional()
+        .allow(null)
+        .messages({
+          "number.base": "Captain ID must be a number",
+          "number.integer": "Captain ID must be an integer",
+          "number.positive": "Captain ID must be positive",
+        }),
       chip: Joi.string().trim().optional().messages({
         "string.base": "Chip must be a string",
       }),
