@@ -1,8 +1,10 @@
-import TeamService from "../services/TeamService.js";
+// import TeamService from "../services/TeamService.js";
+import { TeamRepository } from "../repositories/implementations/TeamRepository.js";
 import sequelize from "./db.js";
 async function populatePlayers() {
-  const teams = await TeamService.getAllTeams();
-  //   console.log(teams);
+  const teamRepo = new TeamRepository();
+  const teams = await teamRepo.findAll();
+  console.log(teams);
   for (const team of teams) {
     try {
       const response = await fetch(

@@ -86,25 +86,24 @@ export class TeamRepository extends ITeamRepository {
       const results = {};
 
       // Upsert captaincy: ensure one captain per (team_id, gameweek_id)
-      if (captianId != null) {
-        await sequelize.query(
-          `
+      // Always insert/update captaincy record, even if captianId is null
+      await sequelize.query(
+        `
           INSERT INTO captaincy (player_id, team_id, gameweek_id)
           VALUES (?, ?, ?)
           ON CONFLICT (team_id, gameweek_id)
           DO UPDATE SET player_id = EXCLUDED.player_id
           `,
-          {
-            replacements: [captianId, id, gameweek],
-            transaction,
-          }
-        );
-        results.captaincy = {
-          player_id: captianId,
-          team_id: id,
-          gameweek_id: gameweek,
-        };
-      }
+        {
+          replacements: [captianId || null, id, gameweek],
+          transaction,
+        }
+      );
+      results.captaincy = {
+        player_id: captianId || null,
+        team_id: id,
+        gameweek_id: gameweek,
+      };
 
       // Upsert chip: one chip record per (team_id, gameweek_id)
       if (chip != null) {
