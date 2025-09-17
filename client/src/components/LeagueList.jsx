@@ -8,6 +8,7 @@ function LeagueList({ currentGameWeek }) {
   const { setLeagueNames } = useLeagues();
 
   useEffect(() => {
+    if (!currentGameWeek) return;
     const fetchTeams = async () => {
       try {
         const response = await fetch(
