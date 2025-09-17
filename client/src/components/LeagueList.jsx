@@ -1,16 +1,47 @@
-import LeagueCard from './LeagueCard';
-import './LeagueList.css';
+import { useState, useEffect } from "react";
+import LeagueCard from "./LeagueCard";
+import { useLeagues } from "../context/leaguesContext";
+import "./LeagueList.css";
 
-const ids = [
-  418940, 307140, 767007, 805231, 712543, 863026, 673216, 1074101, 666058, 572827, 348627, 384960, 2193, 2587078, 797003, 798822, 400715, 412945, 601655, 576117
-];
+function LeagueList({ currentGameWeek }) {
+  const [teams, setTeams] = useState([]);
+  const { setLeagueNames } = useLeagues();
 
-function LeagueList() {
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/teams/with-players?gameweek=${currentGameWeek}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch teams");
+        }
+        const teamsData = await response.json();
+        setTeams(teamsData || []);
+        setLeagueNames((prev) => {
+          const updated = { ...prev };
+          teamsData.forEach((team) => {
+            if (team.id && team.name) {
+              updated[team.id] = team.name;
+            }
+          });
+          return updated;
+        });
+
+        console.log("Fetched teams:", teamsData);
+      } catch (err) {
+        console.error("Error fetching teams:", err);
+      }
+    };
+
+    fetchTeams();
+  }, [currentGameWeek]);
+
   return (
-    <div className="multi-league-list">
-      {ids.map((id) => (
-        <LeagueCard key={id} initialLeagueId={id} />
-      ))}
+    <div className="container">
+      <div className="multi-league-list">
+        {teams && teams.map((team) => <LeagueCard key={team.id} team={team} currentGameWeek={currentGameWeek} />)}
+      </div>
     </div>
   );
 }

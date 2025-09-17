@@ -1,6 +1,6 @@
 .multi-league-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(2, minmax(400px, 1fr));
   gap: 2rem;
   width: 100%;
   flex: 1 1 0;
@@ -10,7 +10,7 @@
 
 @media (max-width: 768px) {
   .multi-league-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     padding: 0;
   }
@@ -18,7 +18,7 @@
 
 @media (min-width: 1200px) {
   .multi-league-list {
-    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     max-width: none;
     margin: 0;
   }
@@ -26,6 +26,6 @@
 
 @media (min-width: 1600px) {
   .multi-league-list {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
