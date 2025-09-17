@@ -7,6 +7,7 @@ import {
   Chip,
 } from "../../models/index.js";
 import { ITeamRepository } from "../interfaces/ITeamRepository.js";
+import { Op } from "sequelize";
 
 export class TeamRepository extends ITeamRepository {
   async findAll() {
@@ -58,7 +59,7 @@ export class TeamRepository extends ITeamRepository {
           model: Chip,
           as: "chips",
           required: false, // LEFT JOIN - include teams even without chips
-          ...(gameweekNumber && { where: { gameweek_id: gameweekNumber } }),
+          // Get ALL chips (not filtered by gameweek) so we can filter in service layer
         },
         include,
       ],
