@@ -3,7 +3,7 @@ export class standingsService {
     this.standingsRepository = standingsRepository;
   }
   // Get standings
-  getStandings = async () => {
-    return await this.standingsRepository.getStandings();
+  getStandings = async (gameWeek) => {
+    return await this.standingsRepository.getStandings(gameWeek);
   };
 }

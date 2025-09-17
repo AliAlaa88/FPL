@@ -58,12 +58,14 @@ Player.belongsTo(Team, {
 // Player has many PlayerGameWeeks
 Player.hasMany(PlayerGameWeek, {
   foreignKey: "player_id",
+  sourceKey: "entry_id",
   as: "gameweeks",
 });
 
 // PlayerGameWeek belongs to Player
 PlayerGameWeek.belongsTo(Player, {
   foreignKey: "player_id",
+  targetKey: "entry_id",
   as: "player",
 });
 
@@ -125,6 +127,20 @@ GameWeek.hasMany(Chip, {
 Chip.belongsTo(GameWeek, {
   foreignKey: "gameweek_id",
   as: "gameweek",
+});
+
+// Player has many Captaincies
+Player.hasMany(Captaincy, {
+  foreignKey: "player_id",
+  sourceKey: "entry_id",
+  as: "captaincies",
+});
+
+// Captaincy belongs to Player
+Captaincy.belongsTo(Player, {
+  foreignKey: "player_id",
+  targetKey: "entry_id",
+  as: "player",
 });
 
 // Export all models and sequelize instance

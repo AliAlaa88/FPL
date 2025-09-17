@@ -70,6 +70,25 @@ export class TeamController {
       }
     }
   };
+  updateTeamGameweekData = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { gameweek, captianId, chip } = req.body;
+      const team = await this.teamService.updateTeamGameweekData(
+        id,
+        gameweek,
+        captianId,
+        chip
+      );
+      res.json(team);
+    } catch (error) {
+      if (error.message.includes("not found")) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
 
   // Delete team
   deleteTeam = async (req, res) => {

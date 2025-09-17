@@ -1,4 +1,11 @@
-import { Team, Player, PlayerGameWeek } from "../../models/index.js";
+import {
+  Team,
+  Player,
+  PlayerGameWeek,
+  sequelize,
+  Captaincy,
+  Chip,
+} from "../../models/index.js";
 import { ITeamRepository } from "../interfaces/ITeamRepository.js";
 
 export class TeamRepository extends ITeamRepository {
@@ -40,7 +47,21 @@ export class TeamRepository extends ITeamRepository {
     };
 
     return await Team.findAll({
-      include: [include],
+      include: [
+        {
+          model: Captaincy,
+          as: "captaincies",
+          required: false, // LEFT JOIN - include teams even without captaincy
+          ...(gameweekNumber && { where: { gameweek_id: gameweekNumber } }),
+        },
+        {
+          model: Chip,
+          as: "chips",
+          required: false, // LEFT JOIN - include teams even without chips
+          ...(gameweekNumber && { where: { gameweek_id: gameweekNumber } }),
+        },
+        include,
+      ],
       order: [["name", "ASC"]],
     });
   }
@@ -58,6 +79,56 @@ export class TeamRepository extends ITeamRepository {
         },
       ],
     });
+  }
+  async updateGameweekData(id, gameweek, captianId, chip) {
+    const transaction = await sequelize.transaction();
+    try {
+      const results = {};
+
+      // Upsert captaincy: ensure one captain per (team_id, gameweek_id)
+      if (captianId != null) {
+        await sequelize.query(
+          `
+          INSERT INTO captaincy (player_id, team_id, gameweek_id)
+          VALUES (?, ?, ?)
+          ON CONFLICT (team_id, gameweek_id)
+          DO UPDATE SET player_id = EXCLUDED.player_id
+          `,
+          {
+            replacements: [captianId, id, gameweek],
+            transaction,
+          }
+        );
+        results.captaincy = {
+          player_id: captianId,
+          team_id: id,
+          gameweek_id: gameweek,
+        };
+      }
+
+      // Upsert chip: one chip record per (team_id, gameweek_id)
+      if (chip != null) {
+        await sequelize.query(
+          `
+          INSERT INTO chips (team_id, gameweek_id, chip)
+          VALUES (?, ?, ?)
+          ON CONFLICT (team_id, gameweek_id)
+          DO UPDATE SET chip = EXCLUDED.chip
+          `,
+          {
+            replacements: [id, gameweek, chip],
+            transaction,
+          }
+        );
+        results.chips = { team_id: id, gameweek_id: gameweek, chip };
+      }
+
+      await transaction.commit();
+      return { success: true, data: results };
+    } catch (error) {
+      await transaction.rollback();
+      throw new Error(`Failed to update gameweek data: ${error.message}`);
+    }
   }
 
   async create(teamData) {
