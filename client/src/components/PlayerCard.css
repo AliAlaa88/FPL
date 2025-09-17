@@ -15,7 +15,7 @@
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid rgba(100, 116, 139, 0.3);
-  font-size: 0.9rem;
+  font-size: 1.25rem;
   padding: 1rem;
   position: relative;
   overflow: hidden;

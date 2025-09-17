@@ -1,40 +1,36 @@
-import React, { useEffect } from "react";
 import "./FixtureCard.css";
-function FixtureCard({ league1, league2, league1Points, league2Points, handleStandingChange }) {
-  let winner = null;
-  
-  useEffect(() => {
-    let league1NewPoints = 0;
-    let league2NewPoints = 0;
-    
-    if (league1Points > league2Points) {
-      league1NewPoints = 3;
-      league2NewPoints = 0;
-    } else if (league2Points > league1Points) {
-      league1NewPoints = 0;
-      league2NewPoints = 3;
-    } else if (league1Points === league2Points) {
-      league1NewPoints = 1;
-      league2NewPoints = 1;
-    }
-    
-    handleStandingChange(league1, league1NewPoints, league1Points, league2, league2NewPoints, league2Points);
-  }, [league1, league2, league1Points, league2Points, handleStandingChange]);
+import { useLeagues } from "../context/leaguesContext";
 
-  if (league1Points > league2Points) {
-    winner = league1;
-  } else if (league2Points > league1Points) {
-    winner = league2;
-  } else if (league1Points === league2Points) {
+function FixtureCard({ homeTeam, awayTeam, homeTeamId, awayTeamId, homePoints, awayPoints, gameweek }) {
+  const { teamTotalPoints } = useLeagues();
+  
+  // Use context points if available, otherwise fallback to API points or 0
+  const homeTeamPoints = teamTotalPoints[homeTeamId] || homePoints || 0;
+  const awayTeamPoints = teamTotalPoints[awayTeamId] || awayPoints || 0;
+  
+  let winner = null;
+  let result = "";
+  
+  if (homeTeamPoints > awayTeamPoints) {
+    winner = homeTeam;
+    result = "W";
+  } else if (awayTeamPoints > homeTeamPoints) {
+    winner = awayTeam;
+    result = "W";
+  } else {
     winner = "Draw";
+    result = "D";
   }
 
   return (
     <div className="fixture-card">
+      <div className="gameweek-info">
+        <span>Gameweek {gameweek}</span>
+      </div>
       <h3>
-        {league1} <b>({league1Points})</b> vs {league2} <b>({league2Points})</b>
+        {homeTeam} <b>({homeTeamPoints})</b> vs {awayTeam} <b>({awayTeamPoints})</b>
       </h3>
-      <div>
+      <div className="result">
         Winner: <b>{winner}</b>
       </div>
     </div>

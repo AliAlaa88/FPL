@@ -2,132 +2,200 @@ import { useState, useEffect } from "react";
 import { useLeagues } from "../context/leaguesContext";
 import PlayerCard from "./PlayerCard";
 import "./LeagueCard.css";
+import tripleCaptainIcon from "/triple-captain-chip.webp";
+import autoCaptainIcon from "/auto-captain-chip.webp";
+import freeHitIcon from "/free-hit-chip.webp";
 
-function LeagueCard({ initialLeagueId }) {
-  const [leagueId, setLeagueId] = useState(
-    initialLeagueId ? initialLeagueId.toString() : ""
-  );
-  const [data, setData] = useState(null);
-  // eslint-disable-next-line no-unused-vars
-  const { leagues, setLeagues, leaguePoints, setLeaguePoints } = useLeagues();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selected, setSelected] = useState(null);
+function LeagueCard({ team, currentGameWeek }) {
+  // team.chip="AUTOCAPTAIN";
+  // team.captain_id=team.players[0]?.entry_id;
+  // team.captain_id=0;
+
+  // const [selected, setSelected] = useState(team.captaincies[0].player_id || null);
+  const [selected, setSelected] = useState(team.player_id || null);
+  // const [selectedChip, setSelectedChip] = useState(team.chips[0] || "NONE");
+  const [selectedChip, setSelectedChip] = useState(team.chip || "NONE");
   const [totalPoints, setTotalPoints] = useState(0);
-  // Fetch data initially if initialLeagueId is provided
+  const { setTeamTotalPoints } = useLeagues();
+
   useEffect(() => {
-    if (initialLeagueId) {
-      fetchStandingsById(initialLeagueId);
+    const initialTotal = team.players.reduce(
+      (sum, p) =>
+        sum +
+        (p.gameweeks[0].points -
+          +(team.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
+          (1 +
+            +(selected === p.entry_id) *
+              (1 + +(selectedChip === "TRIPLECAPTAIN"))),
+      0
+    );
+    setTotalPoints(initialTotal);
+    if (team.captain_id === 0) {
+      if (team.chip === "AUTOCAPTAIN") {
+        if (team.players.length > 0) {
+          const maxPlayer = team.players.reduce((max, p) => {
+            const currentPoints =
+              p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
+            const maxPoints =
+              max.gameweeks[0].points - max.gameweeks[0].transfers_cost;
+            return currentPoints > maxPoints ? p : max;
+          });
+          setSelected(maxPlayer.entry_id);
+        }
+      } else {
+        if (team.players.length > 0) {
+          const minPlayer = team.players.reduce((min, p) => {
+            const currentPoints =
+              p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
+            const minPoints =
+              min.gameweeks[0].points - min.gameweeks[0].transfers_cost;
+            return currentPoints < minPoints ? p : min;
+          });
+          setSelected(minPlayer.entry_id);
+        }
+      }
     }
-    // eslint-disable-next-line
-  }, [initialLeagueId]);
 
-  const handleChange = (e) => {
-    setLeagueId(e.target.value);
-  };
+    // Store total points in context with team ID
+    setTeamTotalPoints((prev) => ({
+      ...prev,
+      [team.id]: initialTotal,
+    }));
+  }, [team.players, selected, selectedChip, team.id, setTeamTotalPoints]);
 
-  const fetchStandingsById = async (id) => {
-    setLoading(true);
-    setError(null);
-    setData(null);
-    let url = `/api/leagues-classic/${id}/standings`;
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch");
-      const json = await res.json();
-      setData(json);
-      // Add or update league data in context
-      const totalPoints = json.standings.results.reduce(
-        (sum, p) =>
-          sum + (selected === p.id ? p.event_total * 2 : p.event_total),
-        0
-      );
-      setTotalPoints(totalPoints);
-      setLeagues((prevLeagues) => {
-        // Remove any existing league with the same id
-        const filtered = prevLeagues.filter((l) => l.id !== json.league?.id);
-        const newLeague = {
-            id: json.league.id,
-            name: json.league.name,
-            results: json.standings.results,
-            totalPoints,
-          }
-        return [
-          ...filtered,
-          newLeague
-        ];
-      });
-      
-      // Set league points separately
-      setLeaguePoints((prevPoints) => ({
-        ...prevPoints,
-        [json.league.name]: {baseLeaguePoints: 9, liveLeaguePoints: 9, baseTotalPoints:1000, liveTotalPoints:1000}
-      }));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchStandings = async (e) => {
-    e.preventDefault();
-    if (!leagueId) return;
-    fetchStandingsById(leagueId);
-  };
   const handleSelectPlayer = (playerId) => {
+    if (team.captain_id) return; // Prevent changing captain if already submitted
+
     const newSelected = selected === playerId ? null : playerId;
     setSelected(newSelected);
-    // Recalculate total points
-    const newTotal = data.standings.results.reduce(
+
+    const newTotal = team.players.reduce(
       (sum, p) =>
-        sum + (newSelected === p.id ? p.event_total * 2 : p.event_total),
+        sum +
+        (p.gameweeks[0].points -
+          +(team.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
+          (1 +
+            +(newSelected === p.entry_id) *
+              (1 + +(selectedChip === "TRIPLECAPTAIN"))),
       0
     );
     setTotalPoints(newTotal);
-    setLeagues((prevLeagues) => {
-      return prevLeagues.map((l) =>
-        l.id === data.league.id ? { ...l, totalPoints: newTotal } : l
-      );
-    });
-    console.log("leagues after player select:", leagues);
+
+    // Update total points in context
+    setTeamTotalPoints((prev) => ({
+      ...prev,
+      [team.id]: newTotal,
+    }));
   };
+
+  const handleChipSelection = (chip) => {
+    if (team.chip) return; // Prevent changing chip if already submitted
+
+    const newChip = selectedChip === chip ? "NONE" : chip;
+    setSelectedChip(newChip);
+
+    // Recalculate total points with new chip
+    const newTotal = team.players.reduce(
+      (sum, p) =>
+        sum +
+        (p.gameweeks[0].points -
+          +(team.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
+          (1 +
+            +(selected === p.entry_id) * (1 + +(newChip === "TRIPLECAPTAIN"))),
+      0
+    );
+    setTotalPoints(newTotal);
+
+    // Update total points in context
+    setTeamTotalPoints((prev) => ({
+      ...prev,
+      [team.id]: newTotal,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch(`/api/teams/${team.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gameweek: currentGameWeek,
+          captainId: selected,
+          chip: selectedChip,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit team selection");
+      }
+
+      const result = await response.json();
+      console.log("Team selection submitted successfully:", result);
+    } catch (error) {
+      console.error("Error submitting team selection:", error);
+    }
+  };
+
   return (
     <div className="league-card small">
-      <form onSubmit={fetchStandings} className="form-inline">
-        <input
-          type="text"
-          placeholder="League ID"
-          value={leagueId}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit" disabled={loading} className="tick-btn">
-          ✓
-        </button>
-      </form>
-      {error && <p className="error">Error: {error}</p>}
-      {data && data.league && data.standings && (
+      {team && (
         <>
+          <div className="league-header">
+            <button
+              className={
+                selectedChip === "TRIPLECAPTAIN" ? "chip active" : "chip"
+              }
+              onClick={() => handleChipSelection("TRIPLECAPTAIN")}
+              disabled={!!team.chip}
+            >
+              <img src={tripleCaptainIcon} alt="Triple Captain Chip" />
+            </button>
+            <button
+              className={
+                selectedChip === "AUTOCAPTAIN" ? "chip active" : "chip"
+              }
+              onClick={() => handleChipSelection("AUTOCAPTAIN")}
+              disabled={!!team.captain_id}
+            >
+              <img src={autoCaptainIcon} alt="Auto Captain Chip" />
+            </button>
+            <button
+              className={selectedChip === "FREEHIT" ? "chip active" : "chip"}
+              onClick={() => handleChipSelection("FREEHIT")}
+              disabled={!!team.captain_id}
+            >
+              <img src={freeHitIcon} alt="Free Hit Chip" />
+            </button>
+            <button onClick={handleSubmit}>Submit</button>
+          </div>
           <div className="league-info small">
             <span>
-              Name: <b>{data.league.name}</b>
+              Name: <b>{team.name}</b>
             </span>
             <span>
-              ID: <b>{data.league.id}</b>
+              ID: <b>{team.id}</b>
             </span>
             <span>
               GW Points: <b>{totalPoints}</b>
             </span>
+            <span>
+              Chip: <b>{selectedChip}</b>
+            </span>
           </div>
           <div className="players-vertical">
-            {data.standings.results.map((player) => (
+            {team.players.map((player) => (
               <PlayerCard
-                key={player.id}
+                key={player.entry_id}
                 player={player}
-                selected={selected === player.id}
-                onSelect={() => handleSelectPlayer(player.id)}
-                doubled={selected === player.id}
+                selected={selected === player.entry_id}
+                onSelect={() => handleSelectPlayer(player.entry_id)}
+                factor={
+                  1 +
+                  +(selected === player.entry_id) *
+                    (1 + +(selectedChip === "TRIPLECAPTAIN"))
+                }
               />
             ))}
           </div>
