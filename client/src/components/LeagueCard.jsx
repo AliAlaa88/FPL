@@ -163,7 +163,7 @@ function LeagueCard({ team, currentGameWeek }) {
               }
               onClick={() => handleChipSelection("TRIPLECAPTAIN")}
               disabled={
-                !!team?.chips[0]?.chip || team.prevChips?.contains("TRIPLECAPTAIN")
+                !!team?.chips[0]?.chip || team.prevChips?.some(chip => chip.chip === "TRIPLECAPTAIN")
               }
             >
               <img src={tripleCaptainIcon} alt="Triple Captain Chip" />
@@ -174,7 +174,7 @@ function LeagueCard({ team, currentGameWeek }) {
               }
               onClick={() => handleChipSelection("AUTOCAPTAIN")}
               disabled={
-                !!team?.chips[0]?.chip || team.prevChips?.contains("AUTOCAPTAIN")
+                !!team?.chips[0]?.chip || team.prevChips?.some(chip => chip.chip === "AUTOCAPTAIN")
               }
             >
               <img src={autoCaptainIcon} alt="Auto Captain Chip" />
@@ -182,7 +182,7 @@ function LeagueCard({ team, currentGameWeek }) {
             <button
               className={selectedChip === "FREEHIT" ? "chip active" : "chip"}
               onClick={() => handleChipSelection("FREEHIT")}
-              disabled={!!team?.chips[0]?.chip || team.prevChips?.contains("FREEHIT")}
+              disabled={!!team?.chips[0]?.chip || team.prevChips?.some(chip => chip.chip === "FREEHIT")}
             >
               <img src={freeHitIcon} alt="Free Hit Chip" />
             </button>
