@@ -6,13 +6,17 @@ import tripleCaptainIcon from "/triple-captain-chip.webp";
 import autoCaptainIcon from "/auto-captain-chip.webp";
 import freeHitIcon from "/free-hit-chip.webp";
 
-function LeagueCard({ team, currentGameWeek }) {
+function LeagueCard({ team, currentGameWeek, prevChips }) {
   // team?.chips[0]?.chip="AUTOCAPTAIN";
   // team?.captaincies[0]?.player_id=team.players[0]?.entry_id;
   // team?.captaincies[0]?.player_id=0;
 
-  const [selected, setSelected] = useState(team?.captaincies[0]?.player_id || null);
-  const [selectedChip, setSelectedChip] = useState(team?.chips[0]?.chip || "NONE");
+  const [selected, setSelected] = useState(
+    team?.captaincies[0]?.player_id || null
+  );
+  const [selectedChip, setSelectedChip] = useState(
+    team?.chips[0]?.chip || "NONE"
+  );
   const [totalPoints, setTotalPoints] = useState(0);
   const { setTeamTotalPoints } = useLeagues();
 
@@ -21,13 +25,22 @@ function LeagueCard({ team, currentGameWeek }) {
       (sum, p) =>
         sum +
         (p.gameweeks[0].points -
-          +(team?.chips[0]?.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
+          +(team?.chips[0]?.chip !== "FREEHIT") *
+            p.gameweeks[0].transfers_cost) *
           (1 +
             +(selected === p.entry_id) *
               (1 + +(selectedChip === "TRIPLECAPTAIN"))),
       0
     );
     setTotalPoints(initialTotal);
+    // Store total points in context with team ID
+    setTeamTotalPoints((prev) => ({
+      ...prev,
+      [team.id]: initialTotal,
+    }));
+
+    setSelectedChip(team?.chips[0]?.chip || "NONE");
+
     if (team?.captaincies[0]?.player_id === 0) {
       if (team?.chips[0]?.chip === "AUTOCAPTAIN") {
         if (team.players.length > 0) {
@@ -53,15 +66,8 @@ function LeagueCard({ team, currentGameWeek }) {
         }
       }
     } else {
-      console.log("Setting selected captain from existing data:", team?.captaincies[0]?.player_id || null);
       setSelected(team?.captaincies[0]?.player_id || null);
     }
-
-    // Store total points in context with team ID
-    setTeamTotalPoints((prev) => ({
-      ...prev,
-      [team.id]: initialTotal,
-    }));
   }, [team]);
 
   const handleSelectPlayer = (playerId) => {
@@ -74,14 +80,14 @@ function LeagueCard({ team, currentGameWeek }) {
       (sum, p) =>
         sum +
         (p.gameweeks[0].points -
-          +(team?.chips[0]?.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
+          +(team?.chips[0]?.chip !== "FREEHIT") *
+            p.gameweeks[0].transfers_cost) *
           (1 +
             +(newSelected === p.entry_id) *
               (1 + +(selectedChip === "TRIPLECAPTAIN"))),
       0
     );
     setTotalPoints(newTotal);
-
     // Update total points in context
     setTeamTotalPoints((prev) => ({
       ...prev,
@@ -100,13 +106,13 @@ function LeagueCard({ team, currentGameWeek }) {
       (sum, p) =>
         sum +
         (p.gameweeks[0].points -
-          +(team?.chips[0]?.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
+          +(team?.chips[0]?.chip !== "FREEHIT") *
+            p.gameweeks[0].transfers_cost) *
           (1 +
             +(selected === p.entry_id) * (1 + +(newChip === "TRIPLECAPTAIN"))),
       0
     );
     setTotalPoints(newTotal);
-
     // Update total points in context
     setTeamTotalPoints((prev) => ({
       ...prev,
@@ -116,11 +122,14 @@ function LeagueCard({ team, currentGameWeek }) {
 
   const handleSubmit = async () => {
     try {
-      console.log("Submitting team selection:", JSON.stringify({
+      console.log(
+        "Submitting: ",
+        JSON.stringify({
           gameweek: currentGameWeek,
           captianId: selected,
           chip: selectedChip,
-        }));
+        })
+      );
       const response = await fetch(`/api/teams/${team.id}`, {
         method: "POST",
         headers: {
@@ -153,7 +162,9 @@ function LeagueCard({ team, currentGameWeek }) {
                 selectedChip === "TRIPLECAPTAIN" ? "chip active" : "chip"
               }
               onClick={() => handleChipSelection("TRIPLECAPTAIN")}
-              disabled={!!team?.chips[0]?.chip}
+              disabled={
+                !!team?.chips[0]?.chip || prevChips?.contains("TRIPLECAPTAIN")
+              }
             >
               <img src={tripleCaptainIcon} alt="Triple Captain Chip" />
             </button>
@@ -162,18 +173,22 @@ function LeagueCard({ team, currentGameWeek }) {
                 selectedChip === "AUTOCAPTAIN" ? "chip active" : "chip"
               }
               onClick={() => handleChipSelection("AUTOCAPTAIN")}
-              disabled={!!team?.captaincies[0]?.player_id}
+              disabled={
+                !!team?.chips[0]?.chip || prevChips?.contains("AUTOCAPTAIN")
+              }
             >
               <img src={autoCaptainIcon} alt="Auto Captain Chip" />
             </button>
             <button
               className={selectedChip === "FREEHIT" ? "chip active" : "chip"}
               onClick={() => handleChipSelection("FREEHIT")}
-              disabled={!!team?.captaincies[0]?.player_id}
+              disabled={!!team?.chips[0]?.chip || prevChips?.contains("FREEHIT")}
             >
               <img src={freeHitIcon} alt="Free Hit Chip" />
             </button>
-            <button onClick={handleSubmit}>Submit</button>
+            <button onClick={handleSubmit} disabled={!!team?.chips[0]?.chip}>
+              Submit
+            </button>
           </div>
           <div className="league-info small">
             <span>
