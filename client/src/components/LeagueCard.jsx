@@ -6,7 +6,7 @@ import tripleCaptainIcon from "/triple-captain-chip.webp";
 import autoCaptainIcon from "/auto-captain-chip.webp";
 import freeHitIcon from "/free-hit-chip.webp";
 
-function LeagueCard({ team, currentGameWeek, prevChips }) {
+function LeagueCard({ team, currentGameWeek }) {
   // team?.chips[0]?.chip="AUTOCAPTAIN";
   // team?.captaincies[0]?.player_id=team.players[0]?.entry_id;
   // team?.captaincies[0]?.player_id=0;
@@ -137,7 +137,7 @@ function LeagueCard({ team, currentGameWeek, prevChips }) {
         },
         body: JSON.stringify({
           gameweek: currentGameWeek,
-          captianId: selected,
+          ...(selected && { captainId: selected }),
           chip: selectedChip,
         }),
       });
@@ -163,7 +163,7 @@ function LeagueCard({ team, currentGameWeek, prevChips }) {
               }
               onClick={() => handleChipSelection("TRIPLECAPTAIN")}
               disabled={
-                !!team?.chips[0]?.chip || prevChips?.contains("TRIPLECAPTAIN")
+                !!team?.chips[0]?.chip || team.prevChips?.contains("TRIPLECAPTAIN")
               }
             >
               <img src={tripleCaptainIcon} alt="Triple Captain Chip" />
@@ -174,7 +174,7 @@ function LeagueCard({ team, currentGameWeek, prevChips }) {
               }
               onClick={() => handleChipSelection("AUTOCAPTAIN")}
               disabled={
-                !!team?.chips[0]?.chip || prevChips?.contains("AUTOCAPTAIN")
+                !!team?.chips[0]?.chip || team.prevChips?.contains("AUTOCAPTAIN")
               }
             >
               <img src={autoCaptainIcon} alt="Auto Captain Chip" />
@@ -182,7 +182,7 @@ function LeagueCard({ team, currentGameWeek, prevChips }) {
             <button
               className={selectedChip === "FREEHIT" ? "chip active" : "chip"}
               onClick={() => handleChipSelection("FREEHIT")}
-              disabled={!!team?.chips[0]?.chip || prevChips?.contains("FREEHIT")}
+              disabled={!!team?.chips[0]?.chip || team.prevChips?.contains("FREEHIT")}
             >
               <img src={freeHitIcon} alt="Free Hit Chip" />
             </button>
