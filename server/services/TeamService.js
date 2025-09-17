@@ -19,6 +19,25 @@ export class TeamService {
       const teams = await this.teamRepository.findAllWithPlayers(
         gameweekNumber
       );
+
+      // Process chips for each team
+      teams.forEach((team) => {
+        if (gameweekNumber) {
+          // Filter chips into current and previous
+          team.dataValues.prevChips = team.chips.filter(
+            (chip) => chip.gameweek_id < gameweekNumber
+          );
+
+          // Update chips to only include current gameweek
+          team.dataValues.chips = team.chips.filter(
+            (chip) => chip.gameweek_id === parseInt(gameweekNumber)
+          );
+        } else {
+          // If no gameweek specified, prevChips is empty
+          team.dataValues.prevChips = [];
+        }
+      });
+
       return teams;
     } catch (error) {
       throw new Error(`Error fetching teams with players: ${error.message}`);
