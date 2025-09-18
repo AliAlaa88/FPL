@@ -4,7 +4,8 @@ import fetch from "node-fetch";
 import sequelize from "./config/db.js";
 import apiRoutes from "./routes/index.js";
 import morgan from "morgan";
-
+import cron from "node-cron";
+import { populatePlayerGameWeek } from "./config/populateDB.js";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -36,6 +37,25 @@ app.get("/api/leagues-classic/:league_id/standings", async (req, res) => {
   }
 });
 
+function setupCronJobs() {
+  // Schedule the job to run daily at 3 AM
+  cron.schedule(
+    "0 3 * * *",
+    async () => {
+      console.log("Running daily player gameweek population job at 2 AM");
+      try {
+        await populatePlayerGameWeek();
+        console.log("Player gameweek population job completed");
+      } catch (error) {
+        console.error("Error during player gameweek population job:", error);
+      }
+    },
+    {
+      timezone: "Africa/Cairo", // Set to your desired timezone
+    }
+  );
+}
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -50,6 +70,7 @@ app.listen(PORT, async () => {
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
+    setupCronJobs();
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
