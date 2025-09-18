@@ -88,7 +88,11 @@ export async function populatePlayerGameWeek() {
         await sequelize.query(
           `INSERT INTO player_gameweeks (player_id, gameweek_id, points, total_points, transfers, transfers_cost) 
            VALUES ${insertData.map(() => "(?, ?, ?, ?, ?, ?)").join(", ")} 
-           ON CONFLICT (player_id, gameweek_id) DO NOTHING`,
+           ON CONFLICT (player_id, gameweek_id) DO UPDATE SET 
+             points = EXCLUDED.points,
+             total_points = EXCLUDED.total_points,
+             transfers = EXCLUDED.transfers,
+             transfers_cost = EXCLUDED.transfers_cost`,
           {
             replacements: insertData.flat(),
           }
