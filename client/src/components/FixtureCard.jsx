@@ -28,14 +28,14 @@ function FixtureCard({ homeTeam, awayTeam, homeTeamId, awayTeamId, homePoints, a
         <div className="team-vs-team">
           <div className="team-section">
             <div className="team-name">{homeTeam}</div>
-            <div className="team-points">{homeTeamPoints}</div>
+            <div className={`team-points ${homeTeamPoints > awayTeamPoints ? 'points-win' : homeTeamPoints < awayTeamPoints ? 'points-loss' : 'points-draw'}`}>{homeTeamPoints}</div>
           </div>
           
           <div className="vs-divider">VS</div>
           
           <div className="team-section">
             <div className="team-name">{awayTeam}</div>
-            <div className="team-points">{awayTeamPoints}</div>
+            <div className={`team-points ${awayTeamPoints > homeTeamPoints ? 'points-win' : awayTeamPoints < homeTeamPoints ? 'points-loss' : 'points-draw'}`}>{awayTeamPoints}</div>
           </div>
         </div>
       </div>

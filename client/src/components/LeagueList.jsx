@@ -39,7 +39,8 @@ function LeagueList({ currentGameWeek }) {
   }, [currentGameWeek]);
 
   return (
-    <div className="container">
+    <div className="league-list-container">
+      <h2>Leagues</h2>
       <div className="multi-league-list">
         {teams && teams.map((team) => (
           <LeagueCard

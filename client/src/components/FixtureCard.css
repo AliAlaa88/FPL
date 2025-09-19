@@ -120,15 +120,30 @@
   font-size: 1.1rem;
   color: #f1f5f9;
   letter-spacing: -0.025em;
+  text-align: center;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .team-points {
-  background: linear-gradient(135deg, #646cff 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 800;
+}
+
+.team-points.points-win {
+  color: #34d399;
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.35);
+}
+
+.team-points.points-loss {
+  color: #f87171;
+  text-shadow: 0 0 10px rgba(248, 113, 113, 0.25);
+}
+
+.team-points.points-draw {
+  color: #cbd5e1;
+  opacity: 0.9;
 }
 
 .vs-divider {
