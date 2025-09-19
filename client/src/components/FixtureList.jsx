@@ -119,8 +119,7 @@ function FixtureList({ currentGameWeek }) {
   const availableLeagues = getAvailableLeagues(league2);
 
   return (
-    <div className="container">
-      <div className="fixtureList">
+    <div className="fixtureList">
         <h2>Fixtures</h2>
         <button
           onClick={handleSubmitFixtures}
@@ -177,7 +176,6 @@ function FixtureList({ currentGameWeek }) {
             />
           ))}
         </div>
-      </div>
     </div>
   );
 }
