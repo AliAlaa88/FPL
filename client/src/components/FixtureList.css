@@ -13,7 +13,7 @@
   flex: 1 1 0;
   padding: 2rem;
   position: relative;
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 
 .fixtureList::before {
@@ -41,6 +41,7 @@
 
 .fixtures-controls {
   display: flex;
+  flex-direction: column; /* Place button on its own line */
   gap: 1rem;
   align-items: center;
   justify-content: center;
@@ -51,6 +52,20 @@
   border-radius: 16px;
   border: 1px solid rgba(100, 116, 139, 0.3);
   backdrop-filter: blur(10px);
+}
+
+/* Group the selects and separator on one row */
+.fixtures-selects {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.fixtures-selects span {
+  color: #cbd5e1;
+  font-weight: 700;
 }
 
 .fixtures-controls select,
