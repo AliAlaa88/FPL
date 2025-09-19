@@ -24,14 +24,24 @@ function FixtureCard({ homeTeam, awayTeam, homeTeamId, awayTeamId, homePoints, a
 
   return (
     <div className="fixture-card">
-      <div className="gameweek-info">
-        <span>Gameweek {gameweek}</span>
+      <div className="fixture-teams">
+        <div className="team-vs-team">
+          <div className="team-section">
+            <div className="team-name">{homeTeam}</div>
+            <div className="team-points">{homeTeamPoints}</div>
+          </div>
+          
+          <div className="vs-divider">VS</div>
+          
+          <div className="team-section">
+            <div className="team-name">{awayTeam}</div>
+            <div className="team-points">{awayTeamPoints}</div>
+          </div>
+        </div>
       </div>
-      <h3>
-        {homeTeam} <b>({homeTeamPoints})</b> vs {awayTeam} <b>({awayTeamPoints})</b>
-      </h3>
-      <div className="result">
-        Winner: <b>{winner}</b>
+      
+      <div className="result-section">
+        Winner: <span className={winner !== "Draw" ? "winner" : ""}>{winner}</span>
       </div>
     </div>
   );

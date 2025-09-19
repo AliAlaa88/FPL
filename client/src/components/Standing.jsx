@@ -23,7 +23,7 @@ const Standing = ({ currentGameWeek }) => {
   }, [currentGameWeek]);
 
   return (
-    <div className="container">
+    <div className="standings-container">
       <h2>League Standings</h2>
       <div className="standings-table">
         <div className="standings-header">
