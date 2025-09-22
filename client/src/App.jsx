@@ -12,10 +12,12 @@ const App = () => {
 
   const handlePreviousGW = () => {
     setCurrentGameWeek(prev => Math.max(1, prev - 1));
+    setActiveTab('leagues');
   };
-
+  
   const handleNextGW = () => {
     setCurrentGameWeek(prev => Math.min(maxGameWeek, prev + 1));
+    setActiveTab('leagues');
   };
 
   useEffect(() => {

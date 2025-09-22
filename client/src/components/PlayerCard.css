@@ -114,3 +114,25 @@
 .event-total b {
   font-weight: 800;
 }
+
+/* Red variant for transfer-cost (negative) */
+.event-total.negative {
+  color: #f87171;
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.2) 0%,
+    rgba(220, 38, 38, 0.15) 100%
+  );
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Keep red styling when card is selected */
+.player-card.horizontal.selected .event-total.negative {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.25) 0%,
+    rgba(220, 38, 38, 0.2) 100%
+  );
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}

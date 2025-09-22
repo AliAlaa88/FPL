@@ -22,7 +22,7 @@ function FixtureList({ currentGameWeek }) {
         }
         const fixturesData = await response.json();
         setFixtures(fixturesData || []);
-        // console.log("Fetched fixtures:", fixturesData);
+        console.log("Fetched fixtures:", fixturesData);
       } catch (err) {
         console.error("Error fetching fixtures:", err);
       }
