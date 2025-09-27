@@ -13,7 +13,7 @@
   flex: 1 1 0;
   padding: 2rem;
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .fixtureList::before {

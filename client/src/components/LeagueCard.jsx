@@ -71,8 +71,7 @@ function LeagueCard({ team, currentGameWeek }) {
   }, [team, selected, selectedChip, setTeamTotalPoints]);
 
   const handleSelectPlayer = (playerId) => {
-    if (team?.captaincies[0]?.player_id !== null) return; // Prevent changing captain if already submitted
-
+    if ((team?.captaincies[0]?.player_id || null) !== null) return; // Prevent changing captain if already submitted
     const newSelected = selected === playerId ? null : playerId;
     setSelected(newSelected);
 
