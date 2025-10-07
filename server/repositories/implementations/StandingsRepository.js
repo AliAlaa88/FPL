@@ -29,8 +29,8 @@ export class standingsRepository {
           ON t.id IN (f.home_team_id, f.away_team_id)
           Where gameweek_id <= ?
         GROUP BY t.id, t.name
-        order by league_points DESC;`
-        : `select * from standings order by league_points DESC;`;
+        order by league_points DESC,goals_for DESC;`
+        : `select * from standings order by league_points DESC,goals_for DESC;`;
       const standings = await sequelize.query(query, {
         type: sequelize.QueryTypes.SELECT,
         ...(gameWeek && { replacements: [gameWeek] }),

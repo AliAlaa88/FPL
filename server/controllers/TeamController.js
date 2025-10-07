@@ -33,6 +33,15 @@ export class TeamController {
     try {
       const { gameweek } = req.query;
       const teams = await this.teamService.getTeamsWithPlayers(gameweek);
+      teams.map((team) => {
+        team.captaincies.map((cap) => {
+          if (!cap.player_id || cap.player_id === null) {
+            cap.dataValues.player_id = 0;
+          }
+          return cap;
+        });
+        return team;
+      });
       res.json(teams);
     } catch (error) {
       res.status(500).json({ error: error.message });

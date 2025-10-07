@@ -1,5 +1,6 @@
 .gw {
-  width: 100%;
+  width: 800px; /* fixed width to avoid stretching/compressing */
+  max-width: calc(100vw - 2rem);
   height: 80px;
   margin: 20px 0;
   background: linear-gradient(
@@ -21,6 +22,11 @@
   margin-bottom: 1rem;
   transition: all 0.3s ease;
   padding: 0 2rem;
+  position: sticky; /* stick during scrolling */
+  top: 10px;
+  z-index: 10;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .gw:hover {
@@ -92,6 +98,8 @@
 @media (max-width: 768px) {
   .gw {
     padding: 0 1rem;
+    width: 100%;
+    top: 8px;
   }
   
   .gw-nav-btn {

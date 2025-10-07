@@ -6,16 +6,18 @@ import GameWeek from "./components/GameWeek";
 import "./App.css";
 
 const App = () => {
-  const [currentGameWeek, setCurrentGameWeek] = useState(1);
+  const [currentGameWeek, setCurrentGameWeek] = useState(null);
   const [maxGameWeek, setMaxGameWeek] = useState(1);
   const [activeTab, setActiveTab] = useState('leagues');
 
   const handlePreviousGW = () => {
     setCurrentGameWeek(prev => Math.max(1, prev - 1));
+    setActiveTab('leagues');
   };
-
+  
   const handleNextGW = () => {
     setCurrentGameWeek(prev => Math.min(maxGameWeek, prev + 1));
+    setActiveTab('leagues');
   };
 
   useEffect(() => {

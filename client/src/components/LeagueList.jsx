@@ -8,6 +8,7 @@ function LeagueList({ currentGameWeek }) {
   const { setLeagueNames } = useLeagues();
 
   useEffect(() => {
+    if (!currentGameWeek) return;
     const fetchTeams = async () => {
       try {
         const response = await fetch(
@@ -38,9 +39,16 @@ function LeagueList({ currentGameWeek }) {
   }, [currentGameWeek]);
 
   return (
-    <div className="container">
+    <div className="league-list-container">
+      <h2>Leagues</h2>
       <div className="multi-league-list">
-        {teams && teams.map((team) => <LeagueCard key={team.id} team={team} currentGameWeek={currentGameWeek} />)}
+        {teams && teams.map((team) => (
+          <LeagueCard
+            key={team.id}
+            team={team}
+            currentGameWeek={currentGameWeek}
+          />
+        ))}
       </div>
     </div>
   );
