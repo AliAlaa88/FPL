@@ -1,8 +1,8 @@
 import { Router } from "express";
 const router = Router();
-router.post("/populate", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    await populatePlayers();
+    // await populatePlayers();
     await populatePlayerGameWeek();
     await populateFixturesPoints();
     res.status(200).json({ message: "Data populated successfully" });
