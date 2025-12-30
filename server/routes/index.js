@@ -3,6 +3,7 @@ import fixtureRoutes from "./fixtureRoutes.js";
 import teamRoutes from "./teamRoutes.js";
 import gameWeekRoutes from "./gameWeekRoutes.js";
 import standingsRoutes from "./standingsRoutes.js";
+import populateRoutes from "./populateRoutes.js";
 const router = express.Router();
 
 // Mount routes
@@ -10,6 +11,7 @@ router.use("/fixtures", fixtureRoutes);
 router.use("/teams", teamRoutes);
 router.use("/gameweeks", gameWeekRoutes);
 router.use("/standings", standingsRoutes);
+router.use("/populate", populateRoutes);
 // router.get("/test", async (req, res) => {
 //   const teams = await TeamService.getAllTeamsWithPlayers();
 //   console.log(teams);

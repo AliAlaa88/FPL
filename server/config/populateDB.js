@@ -73,7 +73,7 @@ export async function populatePlayerGameWeek() {
           insertData.push([
             entryId,
             gw.event,
-            gw.points,
+            gw.points - gw.event_transfers_cost,
             gw.total_points,
             gw.event_transfers,
             gw.event_transfers_cost,
