@@ -147,6 +147,72 @@ export class TeamService {
     }
   }
 
+  // Get team history (all GWs with players, captaincies, chips, fixtures)
+  async getTeamHistory(id) {
+    try {
+      const team = await this.teamRepository.findByIdWithHistory(id);
+      if (!team) {
+        throw new Error("Team not found");
+      }
+
+      // Process fixtures into a normalized format
+      const fixtures = [];
+console.log(team);
+      // Process home fixtures
+      if (team.homeFixtures) {
+        team.homeFixtures.forEach((fixture) => {
+          fixtures.push({
+            gameweek_id: fixture.gameweek_id,
+            opponent: fixture.awayTeam,
+            isHome: true,
+            home_points: fixture.home_points,
+            away_points: fixture.away_points,
+            result:
+              fixture.home_points > fixture.away_points
+                ? "W"
+                : fixture.home_points < fixture.away_points
+                ? "L"
+                : "D",
+          });
+        });
+      }
+
+      // Process away fixtures
+      if (team.awayFixtures) {
+        team.awayFixtures.forEach((fixture) => {
+          fixtures.push({
+            gameweek_id: fixture.gameweek_id,
+            opponent: fixture.homeTeam,
+            isHome: false,
+            home_points: fixture.home_points,
+            away_points: fixture.away_points,
+            result:
+              fixture.away_points > fixture.home_points
+                ? "W"
+                : fixture.away_points < fixture.home_points
+                ? "L"
+                : "D",
+          });
+        });
+      }
+
+      // Sort fixtures by gameweek
+      fixtures.sort((a, b) => a.gameweek_id - b.gameweek_id);
+
+      // Return processed team data
+      return {
+        id: team.id,
+        name: team.name,
+        players: team.players,
+        captaincies: team.captaincies,
+        chips: team.chips,
+        fixtures: fixtures,
+      };
+    } catch (error) {
+      throw new Error(`Error fetching team history: ${error.message}`);
+    }
+  }
+
   // Create multiple teams
   async createMultipleTeams(teamsData) {
     try {

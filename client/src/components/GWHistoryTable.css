@@ -1,0 +1,147 @@
+.gw-history-table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.gw-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.gw-history-table th,
+.gw-history-table td {
+  padding: 12px 16px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.gw-history-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.gw-history-table th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gw-history-table tbody tr:hover {
+  background-color: #f8f9fe;
+}
+
+.gw-history-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.gw-history-table tbody tr:nth-child(even):hover {
+  background-color: #f0f2ff;
+}
+
+/* Sticky first column */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 1;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+}
+
+thead .sticky-col {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 2;
+}
+
+.gw-number {
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* Player columns */
+.player-header {
+  min-width: 100px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-points {
+  position: relative;
+  font-weight: 500;
+}
+
+.player-points.captain {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  font-weight: 700;
+}
+
+.captain-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #e74c3c;
+  color: white;
+  font-size: 0.6rem;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+/* Total column */
+.total-points {
+  font-weight: 700;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+}
+
+/* Chip column */
+.chip {
+  color: #999;
+}
+
+.chip.chip-used {
+  color: #667eea;
+  font-weight: 700;
+}
+
+/* Opponent column */
+.opponent {
+  white-space: nowrap;
+}
+
+.home-away {
+  margin-left: 4px;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* Result column */
+.result {
+  font-weight: 700;
+  padding: 8px 16px;
+}
+
+.result-win {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
+
+.result-loss {
+  background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+  color: white;
+}
+
+.result-draw {
+  background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+  color: white;
+}
+
+/* No data message */
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 1.1rem;
+}

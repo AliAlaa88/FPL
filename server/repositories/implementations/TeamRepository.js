@@ -81,6 +81,59 @@ export class TeamRepository extends ITeamRepository {
       ],
     });
   }
+
+  async findByIdWithHistory(id) {
+    return await Team.findByPk(id, {
+      include: [
+        {
+          model: Player,
+          as: "players",
+          include: [
+            {
+              model: PlayerGameWeek,
+              as: "gameweeks",
+              attributes: [
+                "gameweek_id",
+                "player_id",
+                "points",
+                "total_points",
+                "transfers",
+                "transfers_cost",
+              ],
+            },
+          ],
+        },
+        {
+          model: Captaincy,
+          as: "captaincies",
+          attributes: ["gameweek_id", "player_id"],
+        },
+        {
+          model: Chip,
+          as: "chips",
+          attributes: ["gameweek_id", "chip"],
+        },
+        {
+          association: "homeFixtures",
+          attributes: ["gameweek_id", "home_points", "away_points"],
+          include: [{ association: "awayTeam", attributes: ["id", "name"] }],
+        },
+        {
+          association: "awayFixtures",
+          attributes: ["gameweek_id", "home_points", "away_points"],
+          include: [{ association: "homeTeam", attributes: ["id", "name"] }],
+        },
+      ],
+      order: [
+        [
+          { model: Player, as: "players" },
+          { model: PlayerGameWeek, as: "gameweeks" },
+          "gameweek_id",
+          "ASC",
+        ],
+      ],
+    });
+  }
   async updateGameweekData(id, gameweek, captianId, chip) {
     const transaction = await sequelize.transaction();
     try {

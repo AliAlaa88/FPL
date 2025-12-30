@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useLeagues } from "../context/leaguesContext";
 import PlayerCard from "./PlayerCard";
 import "./LeagueCard.css";
@@ -32,8 +33,10 @@ function LeagueCard({ team, currentGameWeek }) {
       if (team?.chips[0]?.chip === "AUTOCAPTAIN") {
         if (team.players.length > 0) {
           const maxPlayer = team.players.reduce((max, p) => {
-            const currentPoints = p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
-            const maxPoints = max.gameweeks[0].points - max.gameweeks[0].transfers_cost;
+            const currentPoints =
+              p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
+            const maxPoints =
+              max.gameweeks[0].points - max.gameweeks[0].transfers_cost;
             return currentPoints > maxPoints ? p : max;
           });
           setSelected(maxPlayer.entry_id);
@@ -41,8 +44,10 @@ function LeagueCard({ team, currentGameWeek }) {
       } else {
         if (team.players.length > 0) {
           const minPlayer = team.players.reduce((min, p) => {
-            const currentPoints = p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
-            const minPoints = min.gameweeks[0].points - min.gameweeks[0].transfers_cost;
+            const currentPoints =
+              p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
+            const minPoints =
+              min.gameweeks[0].points - min.gameweeks[0].transfers_cost;
             return currentPoints < minPoints ? p : min;
           });
           setSelected(minPlayer.entry_id);
@@ -54,13 +59,16 @@ function LeagueCard({ team, currentGameWeek }) {
   // Calculate total points (can be derived state)
   useEffect(() => {
     if (!team) return;
-    
+
     const initialTotal = team.players.reduce(
       (sum, p) =>
         sum +
         (p.gameweeks[0].points -
-          +(team?.chips[0]?.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
-          (1 + +(selected === p.entry_id) * (1 + +(selectedChip === "TRIPLECAPTAIN"))),
+          +(team?.chips[0]?.chip !== "FREEHIT") *
+            p.gameweeks[0].transfers_cost) *
+          (1 +
+            +(selected === p.entry_id) *
+              (1 + +(selectedChip === "TRIPLECAPTAIN"))),
       0
     );
     setTotalPoints(initialTotal);
@@ -162,7 +170,8 @@ function LeagueCard({ team, currentGameWeek }) {
               }
               onClick={() => handleChipSelection("TRIPLECAPTAIN")}
               disabled={
-                !!team?.chips[0]?.chip || team.prevChips?.some(chip => chip.chip === "TRIPLECAPTAIN")
+                !!team?.chips[0]?.chip ||
+                team.prevChips?.some((chip) => chip.chip === "TRIPLECAPTAIN")
               }
             >
               <img src={tripleCaptainIcon} alt="Triple Captain Chip" />
@@ -173,7 +182,8 @@ function LeagueCard({ team, currentGameWeek }) {
               }
               onClick={() => handleChipSelection("AUTOCAPTAIN")}
               disabled={
-                !!team?.chips[0]?.chip || team.prevChips?.some(chip => chip.chip === "AUTOCAPTAIN")
+                !!team?.chips[0]?.chip ||
+                team.prevChips?.some((chip) => chip.chip === "AUTOCAPTAIN")
               }
             >
               <img src={autoCaptainIcon} alt="Auto Captain Chip" />
@@ -181,7 +191,10 @@ function LeagueCard({ team, currentGameWeek }) {
             <button
               className={selectedChip === "FREEHIT" ? "chip active" : "chip"}
               onClick={() => handleChipSelection("FREEHIT")}
-              disabled={!!team?.chips[0]?.chip || team.prevChips?.some(chip => chip.chip === "FREEHIT")}
+              disabled={
+                !!team?.chips[0]?.chip ||
+                team.prevChips?.some((chip) => chip.chip === "FREEHIT")
+              }
             >
               <img src={freeHitIcon} alt="Free Hit Chip" />
             </button>
@@ -202,6 +215,9 @@ function LeagueCard({ team, currentGameWeek }) {
             <span>
               Chip: <b>{selectedChip}</b>
             </span>
+            <Link to={`/league/${team.id}`} className="view-history-link">
+              View History →
+            </Link>
           </div>
           <div className="players-vertical">
             {team.players.map((player) => (
