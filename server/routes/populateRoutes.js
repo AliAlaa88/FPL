@@ -1,8 +1,12 @@
 import { Router } from "express";
+import {
+  populatePlayerGameWeek,
+  populateFixturesPoints,
+} from "../config/populateDB.js";
 const router = Router();
-router.post("/populate", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    await populatePlayers();
+    // await populatePlayers();
     await populatePlayerGameWeek();
     await populateFixturesPoints();
     res.status(200).json({ message: "Data populated successfully" });

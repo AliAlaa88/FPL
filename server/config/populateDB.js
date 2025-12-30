@@ -116,7 +116,7 @@ export async function populatePlayerGameWeek() {
 
   console.log("Player gameweeks populated successfully.");
 }
-async function populateFixturesPoints() {
+export async function populateFixturesPoints() {
   console.log("Starting fixture points calculation...");
 
   // Single optimized query to update all fixtures at once
