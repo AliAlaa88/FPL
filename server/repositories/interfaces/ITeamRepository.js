@@ -19,6 +19,10 @@ export class ITeamRepository {
     throw new Error("Method 'findByIdWithFixtures' must be implemented");
   }
 
+  async findByIdWithHistory(id) {
+    throw new Error("Method 'findByIdWithHistory' must be implemented");
+  }
+
   async create(teamData) {
     throw new Error("Method 'create' must be implemented");
   }

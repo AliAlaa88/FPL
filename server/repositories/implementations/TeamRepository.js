@@ -5,6 +5,7 @@ import {
   sequelize,
   Captaincy,
   Chip,
+  Fixture,
 } from "../../models/index.js";
 import { ITeamRepository } from "../interfaces/ITeamRepository.js";
 import { Op } from "sequelize";
@@ -83,56 +84,80 @@ export class TeamRepository extends ITeamRepository {
   }
 
   async findByIdWithHistory(id) {
-    return await Team.findByPk(id, {
+    console.log("teamrepo");
+
+    // Fetch team basic info
+    const team = await Team.findByPk(id);
+    if (!team) return null;
+
+    console.log("got team");
+
+    // Fetch players with their gameweeks separately
+    const players = await Player.findAll({
+      where: { team_id: id },
       include: [
         {
-          model: Player,
-          as: "players",
-          include: [
-            {
-              model: PlayerGameWeek,
-              as: "gameweeks",
-              attributes: [
-                "gameweek_id",
-                "player_id",
-                "points",
-                "total_points",
-                "transfers",
-                "transfers_cost",
-              ],
-            },
+          model: PlayerGameWeek,
+          as: "gameweeks",
+          attributes: [
+            "gameweek_id",
+            "player_id",
+            "points",
+            "total_points",
+            "transfers",
+            "transfers_cost",
           ],
         },
-        {
-          model: Captaincy,
-          as: "captaincies",
-          attributes: ["gameweek_id", "player_id"],
-        },
-        {
-          model: Chip,
-          as: "chips",
-          attributes: ["gameweek_id", "chip"],
-        },
-        {
-          association: "homeFixtures",
-          attributes: ["gameweek_id", "home_points", "away_points"],
-          include: [{ association: "awayTeam", attributes: ["id", "name"] }],
-        },
-        {
-          association: "awayFixtures",
-          attributes: ["gameweek_id", "home_points", "away_points"],
-          include: [{ association: "homeTeam", attributes: ["id", "name"] }],
-        },
-      ],
-      order: [
-        [
-          { model: Player, as: "players" },
-          { model: PlayerGameWeek, as: "gameweeks" },
-          "gameweek_id",
-          "ASC",
-        ],
       ],
     });
+
+    console.log("got players");
+
+    // Fetch captaincies
+    const captaincies = await Captaincy.findAll({
+      where: { team_id: id },
+      attributes: ["gameweek_id", "player_id"],
+    });
+
+    console.log("got captaincies");
+
+    // Fetch chips
+    const chips = await Chip.findAll({
+      where: { team_id: id },
+      attributes: ["gameweek_id", "chip"],
+    });
+
+    console.log("got chips");
+
+    // Fetch home fixtures
+    // const { Fixture } = await import("../../models/index.js");
+    const homeFixtures = await Fixture.findAll({
+      where: { home_team_id: id },
+      attributes: ["gameweek_id", "home_points", "away_points"],
+      include: [{ association: "awayTeam", attributes: ["id", "name"] }],
+    });
+
+    console.log("got homeFixtures");
+
+    // Fetch away fixtures
+    const awayFixtures = await Fixture.findAll({
+      where: { away_team_id: id },
+      attributes: ["gameweek_id", "home_points", "away_points"],
+      include: [{ association: "homeTeam", attributes: ["id", "name"] }],
+    });
+
+    console.log("got awayFixtures");
+
+    // Combine into response object
+    return {
+      id: team.id,
+      name: team.name,
+      players,
+      captaincies,
+      chips,
+      homeFixtures,
+      awayFixtures,
+    };
   }
   async updateGameweekData(id, gameweek, captianId, chip) {
     const transaction = await sequelize.transaction();

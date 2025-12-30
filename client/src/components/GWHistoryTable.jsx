@@ -43,10 +43,52 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
     return player.gameweeks?.find((gw) => gw.gameweek_id === gwId);
   };
 
+  // Get effective captain ID (handles auto-captain and min-player logic)
+  const getEffectiveCaptainId = (gwId) => {
+    const captainId = captaincyMap[gwId];
+    const chip = chipMap[gwId];
+
+    // If captain is explicitly set and not 0, use it
+    if (captainId && captainId !== 0) {
+      return captainId;
+    }
+
+    // No captain selected (0 or null) - apply auto logic
+    if (players && players.length > 0) {
+      if (chip === "AUTOCAPTAIN") {
+        // AUTOCAPTAIN: pick player with max points
+        const maxPlayer = players.reduce((max, p) => {
+          const pData = getPlayerGWData(p, gwId);
+          const maxData = getPlayerGWData(max, gwId);
+          const currentPoints =
+            (pData?.points || 0) - (pData?.transfers_cost || 0);
+          const maxPoints =
+            (maxData?.points || 0) - (maxData?.transfers_cost || 0);
+          return currentPoints > maxPoints ? p : max;
+        });
+        return maxPlayer.entry_id;
+      } else {
+        // No chip or other chip: pick player with min points
+        const minPlayer = players.reduce((min, p) => {
+          const pData = getPlayerGWData(p, gwId);
+          const minData = getPlayerGWData(min, gwId);
+          const currentPoints =
+            (pData?.points || 0) - (pData?.transfers_cost || 0);
+          const minPoints =
+            (minData?.points || 0) - (minData?.transfers_cost || 0);
+          return currentPoints < minPoints ? p : min;
+        });
+        return minPlayer.entry_id;
+      }
+    }
+
+    return null;
+  };
+
   // Calculate total team points for a gameweek
   const calculateGWTotal = (gwId) => {
     let total = 0;
-    const captainId = captaincyMap[gwId];
+    const effectiveCaptainId = getEffectiveCaptainId(gwId);
     const chip = chipMap[gwId];
     const isFreeHit = chip === "FREEHIT";
     const isTripleCaptain = chip === "TRIPLECAPTAIN";
@@ -62,7 +104,7 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
         }
 
         // Apply captain multiplier
-        if (player.entry_id === captainId) {
+        if (player.entry_id === effectiveCaptainId) {
           points *= isTripleCaptain ? 3 : 2;
         }
 
@@ -113,7 +155,7 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
             <th className="sticky-col">GW</th>
             {players.map((player) => (
               <th key={player.entry_id} className="player-header">
-                {player.player_name || `Player ${player.entry_id}`}
+                {player.player_name || `${player.name}`}
               </th>
             ))}
             <th>Total</th>
@@ -126,23 +168,31 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
           {gameweeks.map((gwId) => {
             const fixture = fixtureMap[gwId];
             const chip = chipMap[gwId];
-            const captainId = captaincyMap[gwId];
+            const effectiveCaptainId = getEffectiveCaptainId(gwId);
             const total = calculateGWTotal(gwId);
 
             return (
               <tr key={gwId}>
-                <td className="sticky-col gw-number">GW{gwId}</td>
+                <td className="gw-number">GW{gwId}</td>
                 {players.map((player) => {
                   const gwData = getPlayerGWData(player, gwId);
-                  const isCaptain = player.entry_id === captainId;
+                  const isCaptain = player.entry_id === effectiveCaptainId;
+                  const isFreeHit = chip === "FREEHIT";
                   const points = gwData?.points ?? "-";
+                  const transferCost = gwData?.transfers_cost || 0;
+                  const hasTransferCost = !isFreeHit && transferCost > 0;
 
                   return (
                     <td
                       key={player.entry_id}
-                      className={`player-points ${isCaptain ? "captain" : ""}`}
+                      className={`player-points ${isCaptain ? "captain" : ""} ${
+                        hasTransferCost ? "has-cost" : ""
+                      }`}
                     >
-                      {points}
+                      <span className="points-value">{points}</span>
+                      {hasTransferCost && (
+                        <span className="transfer-cost">-{transferCost}</span>
+                      )}
                       {isCaptain && <span className="captain-badge">C</span>}
                     </td>
                   );

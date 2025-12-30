@@ -157,20 +157,21 @@ export class TeamService {
 
       // Process fixtures into a normalized format
       const fixtures = [];
-console.log(team);
+
       // Process home fixtures
       if (team.homeFixtures) {
         team.homeFixtures.forEach((fixture) => {
+          const f = fixture.get ? fixture.get({ plain: true }) : fixture;
           fixtures.push({
-            gameweek_id: fixture.gameweek_id,
-            opponent: fixture.awayTeam,
+            gameweek_id: f.gameweek_id,
+            opponent: f.awayTeam,
             isHome: true,
-            home_points: fixture.home_points,
-            away_points: fixture.away_points,
+            home_points: f.home_points,
+            away_points: f.away_points,
             result:
-              fixture.home_points > fixture.away_points
+              f.home_points > f.away_points
                 ? "W"
-                : fixture.home_points < fixture.away_points
+                : f.home_points < f.away_points
                 ? "L"
                 : "D",
           });
@@ -180,16 +181,17 @@ console.log(team);
       // Process away fixtures
       if (team.awayFixtures) {
         team.awayFixtures.forEach((fixture) => {
+          const f = fixture.get ? fixture.get({ plain: true }) : fixture;
           fixtures.push({
-            gameweek_id: fixture.gameweek_id,
-            opponent: fixture.homeTeam,
+            gameweek_id: f.gameweek_id,
+            opponent: f.homeTeam,
             isHome: false,
-            home_points: fixture.home_points,
-            away_points: fixture.away_points,
+            home_points: f.home_points,
+            away_points: f.away_points,
             result:
-              fixture.away_points > fixture.home_points
+              f.away_points > f.home_points
                 ? "W"
-                : fixture.away_points < fixture.home_points
+                : f.away_points < f.home_points
                 ? "L"
                 : "D",
           });

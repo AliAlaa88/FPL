@@ -2,6 +2,7 @@
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 100vh;
 }
 
 .details-header {
@@ -14,27 +15,24 @@
 .details-header h1 {
   margin: 0;
   font-size: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #f1f5f9;
 }
 
 .back-button {
   padding: 10px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #646cff 0%, #3b82f6 100%);
   color: white;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid #646cff;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .back-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.3);
 }
 
 .loading,
@@ -42,9 +40,9 @@
   text-align: center;
   padding: 40px;
   font-size: 1.2rem;
-  color: #666;
+  color: #cbd5e1;
 }
 
 .error {
-  color: #e74c3c;
+  color: #fca5a5;
 }
