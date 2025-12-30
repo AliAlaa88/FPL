@@ -1,6 +1,6 @@
 import "./PlayerCard.css";
 
-function PlayerCard({ player, selected, onSelect, factor }) {
+function PlayerCard({ player, selected, onSelect, factor, isFreeHit }) {
   return (
     <div
       className={`player-card horizontal${selected ? " selected" : ""}`}
@@ -11,6 +11,11 @@ function PlayerCard({ player, selected, onSelect, factor }) {
       <span className="event-total">
         GW Points: <b>{player.gameweeks[0].points * factor}</b>
       </span>
+      {!isFreeHit && player.gameweeks[0].transfers_cost > 0 && (
+        <span className="event-total negative">
+          <b>-{player.gameweeks[0].transfers_cost * factor}</b>
+        </span>
+      )}
     </div>
   );
 }

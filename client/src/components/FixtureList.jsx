@@ -22,7 +22,7 @@ function FixtureList({ currentGameWeek }) {
         }
         const fixturesData = await response.json();
         setFixtures(fixturesData || []);
-        // console.log("Fetched fixtures:", fixturesData);
+        console.log("Fetched fixtures:", fixturesData);
       } catch (err) {
         console.error("Error fetching fixtures:", err);
       }
@@ -119,8 +119,7 @@ function FixtureList({ currentGameWeek }) {
   const availableLeagues = getAvailableLeagues(league2);
 
   return (
-    <div className="container">
-      <div className="fixtureList">
+    <div className="fixtureList">
         <h2>Fixtures</h2>
         <button
           onClick={handleSubmitFixtures}
@@ -137,23 +136,25 @@ function FixtureList({ currentGameWeek }) {
               } New Fixtures`}
         </button>
         <div className="fixtures-controls">
-          <select value={league1} onChange={(e) => setLeague1(e.target.value)}>
-            <option value="">Select League 1</option>
-            {availableLeagues.map(([leagueId, leagueName]) => (
-              <option key={leagueId} value={leagueId}>
-                {leagueName}
-              </option>
-            ))}
-          </select>
-          <span>vs</span>
-          <select value={league2} onChange={(e) => setLeague2(e.target.value)}>
-            <option value="">Select League 2</option>
-            {availableLeagues.map(([leagueId, leagueName]) => (
-              <option key={leagueId} value={leagueId}>
-                {leagueName}
-              </option>
-            ))}
-          </select>
+          <div className="fixtures-selects">
+            <select value={league1} onChange={(e) => setLeague1(e.target.value)}>
+              <option value="">Select League 1</option>
+              {availableLeagues.map(([leagueId, leagueName]) => (
+                <option key={leagueId} value={leagueId}>
+                  {leagueName}
+                </option>
+              ))}
+            </select>
+            <span>vs</span>
+            <select value={league2} onChange={(e) => setLeague2(e.target.value)}>
+              <option value="">Select League 2</option>
+              {availableLeagues.map(([leagueId, leagueName]) => (
+                <option key={leagueId} value={leagueId}>
+                  {leagueName}
+                </option>
+              ))}
+            </select>
+          </div>
           <button
             onClick={handleAddFixture}
             disabled={!league1 || !league2 || league1 === league2}
@@ -175,7 +176,6 @@ function FixtureList({ currentGameWeek }) {
             />
           ))}
         </div>
-      </div>
     </div>
   );
 }

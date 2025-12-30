@@ -21,34 +21,19 @@ function LeagueCard({ team, currentGameWeek }) {
   const { setTeamTotalPoints } = useLeagues();
 
   useEffect(() => {
-    const initialTotal = team.players.reduce(
-      (sum, p) =>
-        sum +
-        (p.gameweeks[0].points -
-          +(team?.chips[0]?.chip !== "FREEHIT") *
-            p.gameweeks[0].transfers_cost) *
-          (1 +
-            +(selected === p.entry_id) *
-              (1 + +(selectedChip === "TRIPLECAPTAIN"))),
-      0
-    );
-    setTotalPoints(initialTotal);
-    // Store total points in context with team ID
-    setTeamTotalPoints((prev) => ({
-      ...prev,
-      [team.id]: initialTotal,
-    }));
+    if (!team) return;
 
+    // Set initial states from team data
     setSelectedChip(team?.chips[0]?.chip || "NONE");
+    setSelected(team?.captaincies[0]?.player_id || null);
 
+    // Handle auto-captain logic when captain_id is 0
     if (team?.captaincies[0]?.player_id === 0) {
       if (team?.chips[0]?.chip === "AUTOCAPTAIN") {
         if (team.players.length > 0) {
           const maxPlayer = team.players.reduce((max, p) => {
-            const currentPoints =
-              p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
-            const maxPoints =
-              max.gameweeks[0].points - max.gameweeks[0].transfers_cost;
+            const currentPoints = p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
+            const maxPoints = max.gameweeks[0].points - max.gameweeks[0].transfers_cost;
             return currentPoints > maxPoints ? p : max;
           });
           setSelected(maxPlayer.entry_id);
@@ -56,23 +41,37 @@ function LeagueCard({ team, currentGameWeek }) {
       } else {
         if (team.players.length > 0) {
           const minPlayer = team.players.reduce((min, p) => {
-            const currentPoints =
-              p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
-            const minPoints =
-              min.gameweeks[0].points - min.gameweeks[0].transfers_cost;
+            const currentPoints = p.gameweeks[0].points - p.gameweeks[0].transfers_cost;
+            const minPoints = min.gameweeks[0].points - min.gameweeks[0].transfers_cost;
             return currentPoints < minPoints ? p : min;
           });
           setSelected(minPlayer.entry_id);
         }
       }
-    } else {
-      setSelected(team?.captaincies[0]?.player_id || null);
     }
-  }, [team]);
+  }, [team, currentGameWeek]);
+
+  // Calculate total points (can be derived state)
+  useEffect(() => {
+    if (!team) return;
+    
+    const initialTotal = team.players.reduce(
+      (sum, p) =>
+        sum +
+        (p.gameweeks[0].points -
+          +(team?.chips[0]?.chip !== "FREEHIT") * p.gameweeks[0].transfers_cost) *
+          (1 + +(selected === p.entry_id) * (1 + +(selectedChip === "TRIPLECAPTAIN"))),
+      0
+    );
+    setTotalPoints(initialTotal);
+    setTeamTotalPoints((prev) => ({
+      ...prev,
+      [team.id]: initialTotal,
+    }));
+  }, [team, selected, selectedChip, setTeamTotalPoints]);
 
   const handleSelectPlayer = (playerId) => {
-    if (team?.captaincies[0]?.player_id) return; // Prevent changing captain if already submitted
-
+    if ((team?.captaincies[0]?.player_id || null) !== null) return; // Prevent changing captain if already submitted
     const newSelected = selected === playerId ? null : playerId;
     setSelected(newSelected);
 
@@ -126,7 +125,7 @@ function LeagueCard({ team, currentGameWeek }) {
         "Submitting: ",
         JSON.stringify({
           gameweek: currentGameWeek,
-          captianId: selected,
+          ...(selected && { captianId: selected }),
           chip: selectedChip,
         })
       );
@@ -137,7 +136,7 @@ function LeagueCard({ team, currentGameWeek }) {
         },
         body: JSON.stringify({
           gameweek: currentGameWeek,
-          ...(selected && { captainId: selected }),
+          ...(selected && { captianId: selected }),
           chip: selectedChip,
         }),
       });
@@ -216,6 +215,7 @@ function LeagueCard({ team, currentGameWeek }) {
                   +(selected === player.entry_id) *
                     (1 + +(selectedChip === "TRIPLECAPTAIN"))
                 }
+                isFreeHit={selectedChip === "FREEHIT"}
               />
             ))}
           </div>
