@@ -73,7 +73,7 @@ export async function populatePlayerGameWeek() {
           insertData.push([
             entryId,
             gw.event,
-            gw.points,
+            gw.points - gw.event_transfers_cost,
             gw.total_points,
             gw.event_transfers,
             gw.event_transfers_cost,
@@ -116,6 +116,62 @@ export async function populatePlayerGameWeek() {
 
   console.log("Player gameweeks populated successfully.");
 }
+export async function populateFixturesPoints() {
+  console.log("Starting fixture points calculation...");
+
+  // Single optimized query to update all fixtures at once
+  const updateQuery = `
+    WITH team_points AS (
+          SELECT 
+              tp.gameweek_id,
+              tp.team_id,
+              tp.base_total_points,
+              c.player_id,
+              tp.max_player_points,
+              tp.min_player_points,
+              (tp.base_total_points + 
+                  (CASE 
+                      WHEN ch.chip = 'TRIPLECAPTAIN' THEN 2 
+                      ELSE 1 
+                  END * CASE
+                      WHEN ch.chip = 'AUTOCAPTAIN' THEN tp.max_player_points
+                      ELSE COALESCE(cp.points, tp.min_player_points)
+                  END)
+              ) AS total_points
+          FROM (
+              SELECT 
+                  pg.gameweek_id, 
+                  p.team_id,
+                  SUM(pg.points + CASE WHEN ch_inner.chip = 'FREEHIT' THEN pg.transfers_cost ELSE 0 END) AS base_total_points,
+                  MIN(pg.points) AS min_player_points,
+                  MAX(pg.points) AS max_player_points
+              FROM player_gameweeks pg
+              JOIN players p ON pg.player_id = p.entry_id
+              LEFT JOIN chips ch_inner ON ch_inner.gameweek_id = pg.gameweek_id AND ch_inner.team_id = p.team_id
+              GROUP BY pg.gameweek_id, p.team_id
+          ) AS tp
+          LEFT JOIN captaincy c ON c.gameweek_id = tp.gameweek_id AND c.team_id = tp.team_id
+          LEFT JOIN player_gameweeks cp ON cp.gameweek_id = c.gameweek_id AND cp.player_id = c.player_id
+          LEFT JOIN chips ch ON ch.gameweek_id = tp.gameweek_id AND ch.team_id = tp.team_id
+    )
+    UPDATE fixtures f
+    SET 
+      home_points = COALESCE(home_pts.total_points, 0),
+      away_points = COALESCE(away_pts.total_points, 0)
+    FROM 
+      team_points home_pts,
+      team_points away_pts
+    WHERE 
+      f.gameweek_id = home_pts.gameweek_id
+      AND f.home_team_id = home_pts.team_id
+      AND f.gameweek_id = away_pts.gameweek_id
+      AND f.away_team_id = away_pts.team_id
+  `;
+
+  const [results, metadata] = await sequelize.query(updateQuery);
+  console.log(`✓ Updated ${metadata.rowCount} fixtures successfully`);
+}
 
 // populatePlayers();
-//populatePlayerGameWeek();
+// populatePlayerGameWeek();
+populateFixturesPoints();
