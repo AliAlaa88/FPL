@@ -70,7 +70,7 @@ app.listen(PORT, async () => {
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
-    setupCronJobs();
+    // setupCronJobs();
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
