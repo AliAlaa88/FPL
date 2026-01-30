@@ -129,6 +129,21 @@ export class TeamController {
     }
   };
 
+  // Get team history (all GWs)
+  getTeamHistory = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const team = await this.teamService.getTeamHistory(id);
+      res.json(team);
+    } catch (error) {
+      if (error.message.includes("not found")) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  };
+
   // Create multiple teams
   createMultipleTeams = async (req, res) => {
     try {

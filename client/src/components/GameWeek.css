@@ -1,55 +1,47 @@
+/* Mobile-first GameWeek navigation */
 .gw {
-  width: 800px; /* fixed width to avoid stretching/compressing */
-  max-width: calc(100vw - 2rem);
-  height: 80px;
-  margin: 20px 0;
+  width: 100%;
+  height: 60px;
+  margin: 0.5rem auto;
   background: linear-gradient(
     135deg,
     rgba(30, 41, 59, 0.95) 0%,
     rgba(15, 23, 42, 0.9) 100%
   );
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(100, 116, 139, 0.3);
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #f1f5f9;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: -0.025em;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-  padding: 0 2rem;
-  position: sticky; /* stick during scrolling */
-  top: 10px;
+  padding: 0 0.75rem;
+  position: sticky;
+  top: 4px;
   z-index: 10;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.gw:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.3);
-  border-color: rgba(100, 116, 139, 0.5);
 }
 
 .gw-content {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   flex: 1;
   justify-content: center;
 }
 
 .gw-label {
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   opacity: 0.8;
 }
 
 .gw-number {
-  font-size: 2rem;
+  font-size: 1.4rem;
   font-weight: 800;
   background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
   -webkit-background-clip: text;
@@ -60,12 +52,12 @@
 .gw-nav-btn {
   background: rgba(100, 116, 139, 0.2);
   border: 1px solid rgba(100, 116, 139, 0.3);
-  border-radius: 12px;
+  border-radius: 10px;
   color: #f1f5f9;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  width: 50px;
-  height: 50px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,20 +87,68 @@
   border-color: rgba(100, 116, 139, 0.3);
 }
 
-@media (max-width: 768px) {
+/* Tablet and up */
+@media (min-width: 768px) {
   .gw {
-    padding: 0 1rem;
-    width: 100%;
+    max-width: 600px;
+    height: 70px;
+    padding: 0 1.5rem;
+    border-radius: 14px;
+    font-size: 1.3rem;
     top: 8px;
   }
-  
+
+  .gw-label {
+    font-size: 1rem;
+  }
+
+  .gw-number {
+    font-size: 1.6rem;
+  }
+
   .gw-nav-btn {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+    border-radius: 11px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1200px) {
+  .gw {
+    max-width: 800px;
+    height: 80px;
+    padding: 0 2rem;
+    border-radius: 16px;
+    font-size: 1.5rem;
+    top: 10px;
+  }
+
+  .gw:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 35px rgba(0, 0, 0, 0.4),
+      0 6px 16px rgba(0, 0, 0, 0.3);
+    border-color: rgba(100, 116, 139, 0.5);
+  }
+
+  .gw-label {
     font-size: 1.2rem;
   }
-  
+
   .gw-number {
-    font-size: 1.8rem;
+    font-size: 2rem;
+  }
+
+  .gw-content {
+    gap: 0.5rem;
+  }
+
+  .gw-nav-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    border-radius: 12px;
   }
 }

@@ -147,6 +147,74 @@ export class TeamService {
     }
   }
 
+  // Get team history (all GWs with players, captaincies, chips, fixtures)
+  async getTeamHistory(id) {
+    try {
+      const team = await this.teamRepository.findByIdWithHistory(id);
+      if (!team) {
+        throw new Error("Team not found");
+      }
+
+      // Process fixtures into a normalized format
+      const fixtures = [];
+
+      // Process home fixtures
+      if (team.homeFixtures) {
+        team.homeFixtures.forEach((fixture) => {
+          const f = fixture.get ? fixture.get({ plain: true }) : fixture;
+          fixtures.push({
+            gameweek_id: f.gameweek_id,
+            opponent: f.awayTeam,
+            isHome: true,
+            home_points: f.home_points,
+            away_points: f.away_points,
+            result:
+              f.home_points > f.away_points
+                ? "W"
+                : f.home_points < f.away_points
+                ? "L"
+                : "D",
+          });
+        });
+      }
+
+      // Process away fixtures
+      if (team.awayFixtures) {
+        team.awayFixtures.forEach((fixture) => {
+          const f = fixture.get ? fixture.get({ plain: true }) : fixture;
+          fixtures.push({
+            gameweek_id: f.gameweek_id,
+            opponent: f.homeTeam,
+            isHome: false,
+            home_points: f.home_points,
+            away_points: f.away_points,
+            result:
+              f.away_points > f.home_points
+                ? "W"
+                : f.away_points < f.home_points
+                ? "L"
+                : "D",
+          });
+        });
+      }
+
+      // Sort fixtures by gameweek
+      fixtures.sort((a, b) => a.gameweek_id - b.gameweek_id);
+
+      // Return processed team data
+      return {
+        id: team.id,
+        name: team.name,
+        players: team.players,
+        captaincies: team.captaincies,
+        chips: team.chips,
+        fixtures: fixtures,
+      };
+    } catch (error) {
+      throw new Error(`Error fetching team history: ${error.message}`);
+    }
+  }
+
   // Create multiple teams
   async createMultipleTeams(teamsData) {
     try {

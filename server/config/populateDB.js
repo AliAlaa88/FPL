@@ -8,7 +8,7 @@ async function populatePlayers() {
   for (const team of teams) {
     try {
       const response = await fetch(
-        `https://fantasy.premierleague.com/api/leagues-classic/${team.id}/standings/`
+        `https://fantasy.premierleague.com/api/leagues-classic/${team.id}/standings/`,
       );
       const data = await response.json();
       const players = data.standings.results;
@@ -17,7 +17,7 @@ async function populatePlayers() {
           "INSERT INTO players (entry_id, name, team_id) VALUES (?, ?, ?) ON CONFLICT (entry_id) DO NOTHING",
           {
             replacements: [player.entry, player.player_name, team.id],
-          }
+          },
         );
       }
     } catch (error) {
@@ -43,7 +43,7 @@ export async function populatePlayerGameWeek() {
     const promises = batch.map(async (entryId) => {
       try {
         const response = await fetch(
-          `https://fantasy.premierleague.com/api/entry/${entryId}/history/`
+          `https://fantasy.premierleague.com/api/entry/${entryId}/history/`,
         );
 
         if (!response.ok) {
@@ -55,7 +55,7 @@ export async function populatePlayerGameWeek() {
       } catch (error) {
         console.error(
           `Error fetching gameweek data for player ${entryId}:`,
-          error.message
+          error.message,
         );
         return { entryId, error: error.message };
       }
@@ -69,11 +69,16 @@ export async function populatePlayerGameWeek() {
       if (result.status === "fulfilled" && result.value.gameweeks) {
         const { entryId, gameweeks } = result.value;
         for (const gw of gameweeks) {
-          if (entryId == 2893375 && gw.event > 3) continue; // Skip known bad data
+          if (entryId === 2893375 && gw.event > 3) continue; // razee3a wrong sub
+          if (entryId === 5854674 && gw.event > 19) continue; // shayateen sub
+          if (entryId === 715364 && gw.event <= 19) continue;
+          if (entryId === 97767 && gw.event > 19) continue; // takteek sub
+          if (entryId === 804349 && gw.event <= 19) continue;
           insertData.push([
             entryId,
             gw.event,
             gw.points - gw.event_transfers_cost,
+            // gw.points,
             gw.total_points,
             gw.event_transfers,
             gw.event_transfers_cost,
@@ -95,7 +100,7 @@ export async function populatePlayerGameWeek() {
              transfers_cost = EXCLUDED.transfers_cost`,
           {
             replacements: insertData.flat(),
-          }
+          },
         );
       } catch (error) {
         console.error("Error inserting batch data:", error.message);
@@ -104,8 +109,8 @@ export async function populatePlayerGameWeek() {
 
     console.log(
       `Processed batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(
-        entryIds.length / BATCH_SIZE
-      )}`
+        entryIds.length / BATCH_SIZE,
+      )}`,
     );
 
     // 5. Add delay between batches to be respectful to the API
@@ -116,6 +121,7 @@ export async function populatePlayerGameWeek() {
 
   console.log("Player gameweeks populated successfully.");
 }
+
 export async function populateFixturesPoints() {
   console.log("Starting fixture points calculation...");
 
@@ -173,5 +179,5 @@ export async function populateFixturesPoints() {
 }
 
 // populatePlayers();
-// populatePlayerGameWeek();
+populatePlayerGameWeek();
 populateFixturesPoints();

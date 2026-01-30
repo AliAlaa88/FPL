@@ -7,8 +7,8 @@ const router = Router();
 router.post("/", async (req, res) => {
   try {
     // await populatePlayers();
-    await populatePlayerGameWeek();
-    await populateFixturesPoints();
+    // await populatePlayerGameWeek();
+    // await populateFixturesPoints();
     res.status(200).json({ message: "Data populated successfully" });
   } catch (error) {
     console.error("Error populating data:", error);

@@ -7,15 +7,14 @@ export const useLeagues = () => useContext(LeaguesContext);
 
 export const LeaguesProvider = ({ children }) => {
   const [leagueNames, setLeagueNames] = useState([]);
-  const [teamTotalPoints, setTeamTotalPoints] = useState({});
 
   return (
-    <LeaguesContext.Provider value={{ 
-      leagueNames, 
-      setLeagueNames, 
-      teamTotalPoints,
-      setTeamTotalPoints
-    }}>
+    <LeaguesContext.Provider
+      value={{
+        leagueNames,
+        setLeagueNames,
+      }}
+    >
       {children}
     </LeaguesContext.Provider>
   );

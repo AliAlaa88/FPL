@@ -1,3 +1,4 @@
+/* Mobile-first FixtureList */
 .fixtureList {
   width: 100%;
   background: linear-gradient(
@@ -5,15 +6,15 @@
     rgba(30, 41, 59, 0.95) 0%,
     rgba(15, 23, 42, 0.9) 100%
   );
-  border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    0 4px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(100, 116, 139, 0.3);
-  flex: 1 1 0;
-  padding: 2rem;
+  padding: 1rem;
   position: relative;
-  /* overflow: hidden; */
 }
 
 .fixtureList::before {
@@ -24,13 +25,13 @@
   right: 0;
   height: 3px;
   background: linear-gradient(90deg, #646cff 0%, #3b82f6 50%, #10b981 100%);
-  border-radius: 24px 24px 0 0;
+  border-radius: 16px 16px 0 0;
   z-index: 1;
 }
 
 .fixtureList h2 {
-  margin: 0 0 2rem 0;
-  font-size: 1.75rem;
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
   font-weight: 800;
   color: #f1f5f9;
   background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
@@ -44,39 +45,39 @@
 
 .fixtures-controls {
   display: flex;
-  flex-direction: column; /* Place button on its own line */
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
   align-items: center;
   justify-content: center;
-  margin: 2rem 0;
-  flex-wrap: wrap;
-  padding: 1.5rem;
+  margin: 1rem 0;
+  padding: 1rem;
   background: rgba(15, 23, 42, 0.6);
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid rgba(100, 116, 139, 0.3);
   backdrop-filter: blur(10px);
   position: relative;
   z-index: 2;
 }
 
-/* Group the selects and separator on one row */
 .fixtures-selects {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .fixtures-selects span {
   color: #cbd5e1;
   font-weight: 700;
+  font-size: 0.85rem;
 }
 
 .fixtures-controls select,
 .fixtures-controls button {
-  padding: 0.875rem 1.25rem;
-  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
   border: 1px solid rgba(100, 116, 139, 0.4);
   background: linear-gradient(
     135deg,
@@ -84,14 +85,16 @@
     rgba(15, 23, 42, 0.8) 100%
   );
   color: #f1f5f9;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
   backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  min-height: 44px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  min-height: 40px;
   cursor: pointer;
+  flex: 1;
+  max-width: 150px;
 }
 
 .fixtures-controls select:hover,
@@ -102,37 +105,30 @@
     rgba(30, 41, 59, 1) 0%,
     rgba(15, 23, 42, 0.9) 100%
   );
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .fixtures-controls select:focus,
 .fixtures-controls button:focus {
   border-color: #646cff;
-  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.2), 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 0 2px rgba(100, 108, 255, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .fixtures-controls button {
   background: linear-gradient(135deg, #646cff 0%, #3b82f6 100%) !important;
   border: 1px solid #646cff !important;
   color: white !important;
-  cursor: pointer;
   font-weight: 700 !important;
-  min-width: 140px;
-  padding: 0.875rem 1.5rem !important;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  outline: none;
-  box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3) !important;
-  backdrop-filter: blur(10px);
-  letter-spacing: 0.025em;
+  min-width: 100px;
+  max-width: none;
+  padding: 0.65rem 1rem !important;
+  box-shadow: 0 2px 6px rgba(100, 108, 255, 0.3) !important;
 }
 
 .fixtures-controls button:hover:not(:disabled) {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(100, 108, 255, 0.4) !important;
-  border-color: #5855ff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.4) !important;
 }
 
 .fixtures-controls button:disabled {
@@ -143,30 +139,26 @@
   box-shadow: none;
 }
 
-/* Submit fixtures button styling */
 .submit-fixtures-btn {
   background: linear-gradient(135deg, #646cff 0%, #3b82f6 100%) !important;
   border: 1px solid #646cff !important;
-  border-radius: 16px !important;
+  border-radius: 12px !important;
   color: white !important;
-  font-size: 1.1rem !important;
+  font-size: 0.9rem !important;
   font-weight: 700 !important;
-  padding: 1.25rem 2.5rem !important;
+  padding: 0.85rem 1.5rem !important;
   cursor: pointer !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  margin: 1.5rem 0 !important;
-  min-width: 220px !important;
-  box-shadow: 0 4px 16px rgba(100, 108, 255, 0.3) !important;
-  backdrop-filter: blur(10px) !important;
-  letter-spacing: 0.025em !important;
+  margin: 1rem 0 !important;
+  min-width: 160px !important;
+  box-shadow: 0 3px 10px rgba(100, 108, 255, 0.3) !important;
   text-transform: uppercase !important;
-  font-size: 0.95rem !important;
+  letter-spacing: 0.025em !important;
 }
 
 .submit-fixtures-btn:hover:not(:disabled) {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 24px rgba(100, 108, 255, 0.4) !important;
-  border-color: #5855ff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 5px 16px rgba(100, 108, 255, 0.4) !important;
 }
 
 .submit-fixtures-btn:disabled {
@@ -174,99 +166,142 @@
   border-color: #475569 !important;
   cursor: not-allowed !important;
   transform: none !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Enhanced dropdown styling */
 .fixtures-controls select {
   appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path fill='%23cbd5e1' d='M4.5 6l3.5 3.5L11.5 6z'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 16px;
-  padding-right: 3rem;
-  min-width: 180px;
+  background-position: right 0.6rem center;
+  background-size: 12px;
+  padding-right: 2rem;
 }
 
 .fixtures-controls select option {
-  background: linear-gradient(
-    135deg,
-    rgba(30, 41, 59, 0.95) 0%,
-    rgba(15, 23, 42, 0.9) 100%
-  );
+  background: rgba(30, 41, 59, 0.95);
   color: #000;
-  padding: 0.75rem 1rem;
-  border: none;
+  padding: 0.5rem 0.75rem;
   font-weight: 500;
 }
 
-.fixtures-controls select option:hover,
-.fixtures-controls select option:focus {
-  background: linear-gradient(135deg, #646cff 0%, #3b82f6 100%);
-  color: white;
-}
-
-.fixtures-controls select option:checked {
-  background: linear-gradient(135deg, #646cff 0%, #3b82f6 100%);
-  color: white;
-  font-weight: 600;
-}
-
+/* Mobile: single column grid */
 .fixtures-container {
-  margin-top: 2rem;
+  margin-top: 1rem;
   display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(2, minmax(520px, 1fr));
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
 }
 
-/* Responsive design improvements */
-@media (max-width: 768px) {
+/* Tablet */
+@media (min-width: 768px) {
   .fixtureList {
     padding: 1.5rem;
     border-radius: 20px;
   }
-  
+
   .fixtureList h2 {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .fixtures-controls {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto;
     gap: 1rem;
     padding: 1.25rem;
+    border-radius: 14px;
+    margin: 1.5rem 0;
   }
-  
+
+  .fixtures-selects {
+    gap: 0.75rem;
+  }
+
+  .fixtures-selects span {
+    font-size: 0.9rem;
+  }
+
   .fixtures-controls select,
   .fixtures-controls button {
-    width: 100%;
-    max-width: 300px;
-    justify-self: center;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    min-height: 42px;
+    max-width: 180px;
   }
-  
+
+  .fixtures-controls select {
+    background-position: right 0.75rem center;
+    background-size: 14px;
+    padding-right: 2.5rem;
+  }
+
+  .submit-fixtures-btn {
+    font-size: 0.95rem !important;
+    padding: 1rem 2rem !important;
+    border-radius: 14px !important;
+    min-width: 180px !important;
+  }
+
   .fixtures-container {
+    margin-top: 1.5rem;
     gap: 1rem;
-    grid-template-columns: 1fr; /* Stack on small screens */
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 480px) {
+/* Desktop */
+@media (min-width: 1200px) {
   .fixtureList {
-    padding: 1rem;
-    border-radius: 16px;
+    padding: 2rem;
+    border-radius: 24px;
   }
-  
+
   .fixtureList h2 {
-    font-size: 1.25rem;
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
   }
-  
+
   .fixtures-controls {
-    padding: 1rem;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+    margin: 2rem 0;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
-  
+
+  .fixtures-selects {
+    gap: 1rem;
+  }
+
   .fixtures-controls select,
   .fixtures-controls button {
-    max-width: 280px;
+    padding: 0.875rem 1.25rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    min-height: 44px;
+    max-width: none;
+    flex: none;
+    min-width: 140px;
+  }
+
+  .fixtures-controls select {
+    min-width: 180px;
+    background-position: right 1rem center;
+    background-size: 16px;
+    padding-right: 3rem;
+  }
+
+  .submit-fixtures-btn {
+    font-size: 1.1rem !important;
+    padding: 1.25rem 2.5rem !important;
+    border-radius: 16px !important;
+    min-width: 220px !important;
+    margin: 1.5rem 0 !important;
+  }
+
+  .fixtures-container {
+    margin-top: 2rem;
+    gap: 1.5rem;
   }
 }

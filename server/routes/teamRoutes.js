@@ -26,6 +26,9 @@ router
 // GET /api/teams/:id/fixtures - Get team with fixtures
 router.get("/:id/fixtures", teamController.getTeamWithFixtures);
 
+// GET /api/teams/:id/history - Get team history with all GWs
+router.get("/:id/history", teamController.getTeamHistory);
+
 // PUT /api/teams/:id/gameweek - Update team's gameweek info (captain/chip)
 router.put(
   "/:id/gameweek",

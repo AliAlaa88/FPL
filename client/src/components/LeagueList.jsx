@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import LeagueCard from "./LeagueCard";
 import { useLeagues } from "../context/leaguesContext";
+import { API_BASE_URL } from "../config";
 import "./LeagueList.css";
 
 function LeagueList({ currentGameWeek }) {
@@ -12,7 +13,7 @@ function LeagueList({ currentGameWeek }) {
     const fetchTeams = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/teams/with-players?gameweek=${currentGameWeek}`
+          `${API_BASE_URL}/api/teams/with-players?gameweek=${currentGameWeek}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch teams");
@@ -42,13 +43,14 @@ function LeagueList({ currentGameWeek }) {
     <div className="league-list-container">
       <h2>Leagues</h2>
       <div className="multi-league-list">
-        {teams && teams.map((team) => (
-          <LeagueCard
-            key={team.id}
-            team={team}
-            currentGameWeek={currentGameWeek}
-          />
-        ))}
+        {teams &&
+          teams.map((team) => (
+            <LeagueCard
+              key={team.id}
+              team={team}
+              currentGameWeek={currentGameWeek}
+            />
+          ))}
       </div>
     </div>
   );
