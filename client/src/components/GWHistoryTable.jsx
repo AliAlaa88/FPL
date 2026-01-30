@@ -172,9 +172,20 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
                 {players.map((player) => {
                   const gwData = getPlayerGWData(player, gwId);
                   const isCaptain = player.entry_id === effectiveCaptainId;
-                  const points = gwData?.points ?? "-";
+                  const isTripleCaptain = chip === "TRIPLECAPTAIN";
+                  const multiplier = isCaptain ? (isTripleCaptain ? 3 : 2) : 1;
+                  const rawPoints = gwData?.points ?? "-";
                   const transferCost = gwData?.transfers_cost || 0;
                   const hasTransferCost = !isFreeHit && transferCost > 0;
+
+                  // Calculate display values with multiplier
+                  const displayPoints =
+                    rawPoints !== "-"
+                      ? (rawPoints + transferCost) * multiplier
+                      : "-";
+                  const displayCost = hasTransferCost
+                    ? transferCost * multiplier
+                    : 0;
 
                   return (
                     <td
@@ -183,13 +194,15 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
                         hasTransferCost ? "has-cost" : ""
                       }`}
                     >
-                      <span className="points-value">
-                        {points !== "-" ? points + transferCost : "-"}
-                      </span>
+                      <span className="points-value">{displayPoints}</span>
                       {hasTransferCost && (
-                        <span className="transfer-cost">-{transferCost}</span>
+                        <span className="transfer-cost">-{displayCost}</span>
                       )}
-                      {isCaptain && <span className="captain-badge">C</span>}
+                      {isCaptain && (
+                        <span className="captain-badge">
+                          {isTripleCaptain ? "3C" : "C"}
+                        </span>
+                      )}
                     </td>
                   );
                 })}
