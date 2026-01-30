@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useParams,
+  useNavigate,
+  NavLink,
+} from "react-router-dom";
 import LeagueList from "./components/LeagueList";
 import FixtureList from "./components/FixtureList";
 import Standing from "./components/Standing";
@@ -7,20 +14,27 @@ import GameWeek from "./components/GameWeek";
 import LeagueDetailsPage from "./components/LeagueDetailsPage";
 import "./App.css";
 
+const TabContent = () => {
+  const { gameweek, tab } = useParams();
+  const currentGameWeek = parseInt(gameweek);
+
+  switch (tab) {
+    case "leagues":
+      return <LeagueList currentGameWeek={currentGameWeek} />;
+    case "fixtures":
+      return <FixtureList currentGameWeek={currentGameWeek} />;
+    case "standings":
+      return <Standing currentGameWeek={currentGameWeek} />;
+    default:
+      return <LeagueList currentGameWeek={currentGameWeek} />;
+  }
+};
+
 const HomePage = () => {
-  const [currentGameWeek, setCurrentGameWeek] = useState(null);
-  const [maxGameWeek, setMaxGameWeek] = useState(1);
-  const [activeTab, setActiveTab] = useState("leagues");
-
-  const handlePreviousGW = () => {
-    setCurrentGameWeek((prev) => Math.max(1, prev - 1));
-    setActiveTab("leagues");
-  };
-
-  const handleNextGW = () => {
-    setCurrentGameWeek((prev) => Math.min(maxGameWeek, prev + 1));
-    setActiveTab("leagues");
-  };
+  const { gameweek, tab } = useParams();
+  const navigate = useNavigate();
+  const currentGameWeek = parseInt(gameweek);
+  const [maxGameWeek, setMaxGameWeek] = useState(currentGameWeek || 1);
 
   useEffect(() => {
     fetch("http://localhost:3001/api/gameweeks/current")
@@ -33,7 +47,6 @@ const HomePage = () => {
       .then((data) => {
         if (data.week_number) {
           const fetchedGW = parseInt(data.week_number);
-          setCurrentGameWeek(fetchedGW);
           setMaxGameWeek(fetchedGW);
         } else {
           console.error("Invalid data format:", data);
@@ -44,17 +57,14 @@ const HomePage = () => {
       });
   }, []);
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "leagues":
-        return <LeagueList currentGameWeek={currentGameWeek} />;
-      case "fixtures":
-        return <FixtureList currentGameWeek={currentGameWeek} />;
-      case "standings":
-        return <Standing currentGameWeek={currentGameWeek} />;
-      default:
-        return <LeagueList currentGameWeek={currentGameWeek} />;
-    }
+  const handlePreviousGW = () => {
+    const newGW = Math.max(1, currentGameWeek - 1);
+    navigate(`/gw/${newGW}/${tab}`);
+  };
+
+  const handleNextGW = () => {
+    const newGW = Math.min(maxGameWeek, currentGameWeek + 1);
+    navigate(`/gw/${newGW}/${tab}`);
   };
 
   return (
@@ -66,34 +76,60 @@ const HomePage = () => {
         maxGW={maxGameWeek}
       />
       <div className="tabs">
-        <button
-          className={`tab ${activeTab === "leagues" ? "active" : ""}`}
-          onClick={() => setActiveTab("leagues")}
+        <NavLink
+          to={`/gw/${currentGameWeek}/leagues`}
+          className={({ isActive }) => `tab ${isActive ? "active" : ""}`}
         >
           Leagues
-        </button>
-        <button
-          className={`tab ${activeTab === "fixtures" ? "active" : ""}`}
-          onClick={() => setActiveTab("fixtures")}
+        </NavLink>
+        <NavLink
+          to={`/gw/${currentGameWeek}/fixtures`}
+          className={({ isActive }) => `tab ${isActive ? "active" : ""}`}
         >
           Fixtures
-        </button>
-        <button
-          className={`tab ${activeTab === "standings" ? "active" : ""}`}
-          onClick={() => setActiveTab("standings")}
+        </NavLink>
+        <NavLink
+          to={`/gw/${currentGameWeek}/standings`}
+          className={({ isActive }) => `tab ${isActive ? "active" : ""}`}
         >
           Standings
-        </button>
+        </NavLink>
       </div>
-      <div className="app">{renderTabContent()}</div>
+      <div className="app">
+        <TabContent />
+      </div>
     </>
   );
+};
+
+const DefaultRedirect = () => {
+  const [currentGW, setCurrentGW] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:3001/api/gameweeks/current")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.week_number) {
+          setCurrentGW(parseInt(data.week_number));
+        } else {
+          setCurrentGW(1);
+        }
+      })
+      .catch(() => setCurrentGW(1));
+  }, []);
+
+  if (currentGW === null) {
+    return <div className="loading">Loading...</div>;
+  }
+
+  return <Navigate to={`/gw/${currentGW}/leagues`} replace />;
 };
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Route path="/" element={<DefaultRedirect />} />
+      <Route path="/gw/:gameweek/:tab" element={<HomePage />} />
       <Route path="/league/:teamId" element={<LeagueDetailsPage />} />
     </Routes>
   );

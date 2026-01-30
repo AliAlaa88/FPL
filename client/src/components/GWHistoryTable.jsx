@@ -153,6 +153,8 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
             <th>Total</th>
             <th>Chip</th>
             <th>Opponent</th>
+            <th>Opp Score</th>
+            <th>GD</th>
             <th>Result</th>
           </tr>
         </thead>
@@ -202,6 +204,37 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
                       {fixture.isHome ? "(H)" : "(A)"}
                     </span>
                   )}
+                </td>
+                <td className="opp-score">
+                  {fixture
+                    ? fixture.isHome
+                      ? fixture.away_points
+                      : fixture.home_points
+                    : "-"}
+                </td>
+                <td
+                  className={`goal-diff ${
+                    fixture
+                      ? (fixture.isHome
+                          ? fixture.home_points - fixture.away_points
+                          : fixture.away_points - fixture.home_points) > 0
+                        ? "positive"
+                        : (fixture.isHome
+                              ? fixture.home_points - fixture.away_points
+                              : fixture.away_points - fixture.home_points) < 0
+                          ? "negative"
+                          : ""
+                      : ""
+                  }`}
+                >
+                  {fixture
+                    ? (() => {
+                        const diff = fixture.isHome
+                          ? fixture.home_points - fixture.away_points
+                          : fixture.away_points - fixture.home_points;
+                        return diff > 0 ? `+${diff}` : diff;
+                      })()
+                    : "-"}
                 </td>
                 <td className={`result ${getResultClass(fixture?.result)}`}>
                   {fixture?.result || "-"}

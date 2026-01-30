@@ -11,9 +11,11 @@
   );
   color: #f1f5f9;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.5);
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.5);
+  cursor: default;
+  pointer-events: none;
   border: 2px solid rgba(100, 116, 139, 0.3);
   font-size: 1.25rem;
   padding: 1rem;
@@ -30,22 +32,12 @@
   width: 3px;
   background: linear-gradient(180deg, #646cff 0%, #3b82f6 100%);
   opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.player-card.horizontal:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.6);
-  border-color: rgba(100, 108, 255, 0.5);
-}
-
-.player-card.horizontal:hover::before {
-  opacity: 1;
 }
 
 .player-card.horizontal.selected {
   border: 2px solid #34d399;
-  box-shadow: 0 4px 20px rgba(52, 211, 153, 0.3),
+  box-shadow:
+    0 4px 20px rgba(52, 211, 153, 0.3),
     0 2px 8px rgba(52, 211, 153, 0.2);
   background: linear-gradient(
     135deg,

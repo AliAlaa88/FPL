@@ -72,7 +72,7 @@ function LeagueCard({ team, currentGameWeek }) {
   }, [team, selected, selectedChip]);
 
   return (
-    <div className="league-card small">
+    <Link to={`/league/${team.id}`} className="league-card small">
       {team && (
         <>
           <div className="league-header">
@@ -109,12 +109,6 @@ function LeagueCard({ team, currentGameWeek }) {
             <span>
               GW Points: <b>{totalPoints}</b>
             </span>
-            <span>
-              Chip: <b>{selectedChip}</b>
-            </span>
-            <Link to={`/league/${team.id}`} className="view-history-link">
-              View History →
-            </Link>
           </div>
           <div className="players-vertical">
             {team.players.map((player) => (
@@ -134,7 +128,7 @@ function LeagueCard({ team, currentGameWeek }) {
           </div>
         </>
       )}
-    </div>
+    </Link>
   );
 }
 
