@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GWHistoryTable from "./GWHistoryTable";
+import { API_BASE_URL } from "../config";
 import "./LeagueDetailsPage.css";
 
 function LeagueDetailsPage() {
@@ -15,7 +16,7 @@ function LeagueDetailsPage() {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://localhost:3001/api/teams/${teamId}/history`
+          `${API_BASE_URL}/api/teams/${teamId}/history`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch team history");

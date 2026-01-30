@@ -12,6 +12,7 @@ import FixtureList from "./components/FixtureList";
 import Standing from "./components/Standing";
 import GameWeek from "./components/GameWeek";
 import LeagueDetailsPage from "./components/LeagueDetailsPage";
+import { API_BASE_URL } from "./config";
 import "./App.css";
 
 const TabContent = () => {
@@ -37,7 +38,7 @@ const HomePage = () => {
   const [maxGameWeek, setMaxGameWeek] = useState(currentGameWeek || 1);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/gameweeks/current")
+    fetch(`${API_BASE_URL}/api/gameweeks/current`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -106,7 +107,7 @@ const DefaultRedirect = () => {
   const [currentGW, setCurrentGW] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/gameweeks/current")
+    fetch(`${API_BASE_URL}/api/gameweeks/current`)
       .then((response) => response.json())
       .then((data) => {
         if (data.week_number) {
