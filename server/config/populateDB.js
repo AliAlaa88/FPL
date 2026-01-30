@@ -68,13 +68,17 @@ export async function populatePlayerGameWeek() {
     for (const result of results) {
       if (result.status === "fulfilled" && result.value.gameweeks) {
         const { entryId, gameweeks } = result.value;
-        for (const gw of gameweeks.filter((gw) => gw.event <= 19)) {
-          if (entryId === 2893375 && gw.event > 3) continue; // Skip known bad data
+        for (const gw of gameweeks) {
+          if (entryId === 2893375 && gw.event > 3) continue; // razee3a wrong sub
+          if (entryId === 5854674 && gw.event > 19) continue; // shayateen sub
+          if (entryId === 715364 && gw.event <= 19) continue;
+          if (entryId === 97767 && gw.event > 19) continue; // takteek sub
+          if (entryId === 804349 && gw.event <= 19) continue;
           insertData.push([
             entryId,
             gw.event,
-            // gw.points - gw.event_transfers_cost,
-            gw.points,
+            gw.points - gw.event_transfers_cost,
+            // gw.points,
             gw.total_points,
             gw.event_transfers,
             gw.event_transfers_cost,
@@ -175,5 +179,5 @@ export async function populateFixturesPoints() {
 }
 
 // populatePlayers();
-// populatePlayerGameWeek();
-// populateFixturesPoints();
+populatePlayerGameWeek();
+populateFixturesPoints();

@@ -44,6 +44,7 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
   };
 
   // Get effective captain ID (handles auto-captain and min-player logic)
+  // Backend now stores net points, so we use points directly without subtracting transfer cost
   const getEffectiveCaptainId = (gwId) => {
     const captainId = captaincyMap[gwId];
     const chip = chipMap[gwId];
@@ -60,10 +61,8 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
         const maxPlayer = players.reduce((max, p) => {
           const pData = getPlayerGWData(p, gwId);
           const maxData = getPlayerGWData(max, gwId);
-          const currentPoints =
-            (pData?.points || 0) - (pData?.transfers_cost || 0);
-          const maxPoints =
-            (maxData?.points || 0) - (maxData?.transfers_cost || 0);
+          const currentPoints = pData?.points || 0;
+          const maxPoints = maxData?.points || 0;
           return currentPoints > maxPoints ? p : max;
         });
         return maxPlayer.entry_id;
@@ -72,10 +71,8 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
         const minPlayer = players.reduce((min, p) => {
           const pData = getPlayerGWData(p, gwId);
           const minData = getPlayerGWData(min, gwId);
-          const currentPoints =
-            (pData?.points || 0) - (pData?.transfers_cost || 0);
-          const minPoints =
-            (minData?.points || 0) - (minData?.transfers_cost || 0);
+          const currentPoints = pData?.points || 0;
+          const minPoints = minData?.points || 0;
           return currentPoints < minPoints ? p : min;
         });
         return minPlayer.entry_id;
@@ -86,22 +83,17 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
   };
 
   // Calculate total team points for a gameweek
+  // Backend now stores net points (after transfer cost), so we don't subtract again
   const calculateGWTotal = (gwId) => {
     let total = 0;
     const effectiveCaptainId = getEffectiveCaptainId(gwId);
     const chip = chipMap[gwId];
-    const isFreeHit = chip === "FREEHIT";
     const isTripleCaptain = chip === "TRIPLECAPTAIN";
 
     players?.forEach((player) => {
       const gwData = getPlayerGWData(player, gwId);
       if (gwData) {
         let points = gwData.points;
-
-        // Subtract transfer cost unless it's a free hit
-        if (!isFreeHit) {
-          points -= gwData.transfers_cost || 0;
-        }
 
         // Apply captain multiplier
         if (player.entry_id === effectiveCaptainId) {
@@ -170,6 +162,7 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
             const chip = chipMap[gwId];
             const effectiveCaptainId = getEffectiveCaptainId(gwId);
             const total = calculateGWTotal(gwId);
+            const isFreeHit = chip === "FREEHIT";
 
             return (
               <tr key={gwId}>
@@ -177,7 +170,6 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
                 {players.map((player) => {
                   const gwData = getPlayerGWData(player, gwId);
                   const isCaptain = player.entry_id === effectiveCaptainId;
-                  const isFreeHit = chip === "FREEHIT";
                   const points = gwData?.points ?? "-";
                   const transferCost = gwData?.transfers_cost || 0;
                   const hasTransferCost = !isFreeHit && transferCost > 0;
@@ -189,7 +181,9 @@ function GWHistoryTable({ players, captaincies, chips, fixtures }) {
                         hasTransferCost ? "has-cost" : ""
                       }`}
                     >
-                      <span className="points-value">{points}</span>
+                      <span className="points-value">
+                        {points !== "-" ? points + transferCost : "-"}
+                      </span>
                       {hasTransferCost && (
                         <span className="transfer-cost">-{transferCost}</span>
                       )}
