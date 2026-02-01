@@ -3,7 +3,6 @@ import cors from "cors";
 import fetch from "node-fetch";
 import sequelize from "./config/db.js";
 import apiRoutes from "./routes/index.js";
-import morgan from "morgan";
 
 const app = express();
 
@@ -49,7 +48,6 @@ app.use(
   }),
 );
 app.use(express.json());
-app.use(morgan("dev"));
 
 // Middleware to ensure DB connection on each request
 app.use(async (req, res, next) => {
