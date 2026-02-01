@@ -10,6 +10,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
+  "https://fpl-leagues.netlify.app/",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -32,18 +33,7 @@ const connectDb = async () => {
 // Middleware
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, etc.)
-      if (!origin) return callback(null, true);
-      
-      // Allow Netlify preview/deploy URLs
-      if (origin.endsWith('.netlify.app')) return callback(null, true);
-      
-      // Allow explicitly listed origins
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      
-      callback(new Error('Not allowed by CORS'));
-    },
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
