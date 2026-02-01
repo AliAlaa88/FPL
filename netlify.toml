@@ -1,7 +1,7 @@
 [build]
   base = "."
   publish = "client/dist"
-  command = "cd server && npm install && cd ../client && npm install && npm run build"
+  command = "cd server && npm install && cd ../client && npm install --include=dev && npm run build"
 
 [functions]
   node_bundler = "esbuild"
