@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
-import serverless from "serverless-http";
 import sequelize from "./config/db.js";
 import apiRoutes from "./routes/index.js";
 import morgan from "morgan";
@@ -96,7 +95,7 @@ app.use((err, req, res, next) => {
 });
 
 // Export for serverless
-export const handler = serverless(app);
+// export const handler = serverless(app);
 
 // For local development
 export default app;

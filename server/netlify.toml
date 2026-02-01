@@ -1,11 +1,12 @@
 [build]
-  base = "."
-  publish = "client/dist"
-  command = "cd server && npm install && cd ../client && npm install && npm run build"
+  base = "server"
+  publish = "../client/dist"
+  command = "npm install && cd ../client && npm install && npm run build"
+  functions = "netlify/functions"
 
 [functions]
   node_bundler = "esbuild"
-  directory = "server/netlify/functions"
+  directory = "netlify/functions"
   external_node_modules = ["express", "sequelize", "pg", "pg-hstore"]
 
 [[redirects]]
