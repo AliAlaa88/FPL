@@ -7,20 +7,20 @@ import { dirname, join } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load .env from the server directory (parent of config)
-dotenv.config({ path: join(__dirname, "../.env") });
+// Load .env from the server directory (only for local development)
+// In production (Netlify), env vars are injected directly
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: join(__dirname, "../.env") });
+}
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: process.env.DB_DIALECT || "postgres",
+  dialect: "postgres",
   logging: false,
   dialectOptions: {
-    ssl:
-      process.env.NODE_ENV === "production"
-        ? {
-            require: true,
-            rejectUnauthorized: false,
-          }
-        : false,
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
   },
 });
 
