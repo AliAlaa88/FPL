@@ -1,13 +1,12 @@
 import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
+import serverless from "serverless-http";
 import sequelize from "./config/db.js";
 import apiRoutes from "./routes/index.js";
 import morgan from "morgan";
-import cron from "node-cron";
-import { populatePlayerGameWeek } from "./config/populateDB.js";
+
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // CORS configuration for production
 const allowedOrigins = [
@@ -16,15 +15,53 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
+// Initialize database connection (cached for warm starts)
+let isDbConnected = false;
+
+const connectDb = async () => {
+  if (!isDbConnected) {
+    try {
+      await sequelize.authenticate();
+      console.log("Database connection established.");
+      isDbConnected = true;
+    } catch (error) {
+      console.error("Unable to connect to the database:", error);
+      throw error;
+    }
+  }
+};
+
 // Middleware
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+      
+      // Allow Netlify preview/deploy URLs
+      if (origin.endsWith('.netlify.app')) return callback(null, true);
+      
+      // Allow explicitly listed origins
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   }),
 );
 app.use(express.json());
 app.use(morgan("dev"));
+
+// Middleware to ensure DB connection on each request
+app.use(async (req, res, next) => {
+  try {
+    await connectDb();
+    next();
+  } catch (error) {
+    res.status(500).json({ error: "Database connection failed" });
+  }
+});
+
 // API Routes
 app.use("/api", apiRoutes);
 
@@ -49,25 +86,6 @@ app.get("/api/leagues-classic/:league_id/standings", async (req, res) => {
   }
 });
 
-function setupCronJobs() {
-  // Schedule the job to run daily at 3 AM
-  cron.schedule(
-    "0 3 * * *",
-    async () => {
-      console.log("Running daily player gameweek population job at 2 AM");
-      try {
-        await populatePlayerGameWeek();
-        console.log("Player gameweek population job completed");
-      } catch (error) {
-        console.error("Error during player gameweek population job:", error);
-      }
-    },
-    {
-      timezone: "Africa/Cairo", // Set to your desired timezone
-    },
-  );
-}
-
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -77,13 +95,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, async () => {
-  console.log(`Proxy server running on port ${PORT}`);
-  try {
-    await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
-    // setupCronJobs();
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-});
+// Export for serverless
+export const handler = serverless(app);
+
+// For local development
+export default app;
