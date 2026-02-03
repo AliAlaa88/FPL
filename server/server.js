@@ -11,7 +11,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://fpl-leagues.netlify.app/",
+  "https://fpl-leagues.netlify.app",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
