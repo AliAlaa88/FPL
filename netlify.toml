@@ -6,6 +6,8 @@
 [functions]
   node_bundler = "esbuild"
   directory = "server/netlify/functions"
+  external_node_modules = ["pg", "pg-hstore"]
+  included_files = ["server/node_modules/pg/**", "server/node_modules/pg-hstore/**"]
 
 [[redirects]]
   from = "/api/*"
